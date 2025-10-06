@@ -12,7 +12,8 @@ import SwiftData
 struct habits_trackerApp: App {
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
-            Item.self,
+            Habit.self,
+            HabitLog.self,
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
 
@@ -23,10 +24,16 @@ struct habits_trackerApp: App {
         }
     }()
 
+    @State private var showSplash = true
+
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            if showSplash {
+                SplashScreenView(isActive: $showSplash)
+            } else {
+                MainTabView()
+                    .modelContainer(sharedModelContainer)
+            }
         }
-        .modelContainer(sharedModelContainer)
     }
 }

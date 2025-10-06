@@ -21,16 +21,15 @@ The app icons have been generated in the `AppIconImages/` folder. Follow these s
 
 | Xcode Slot | File Name | Size |
 |------------|-----------|------|
-| iPhone App - iOS 18+ 1024pt | AppIcon.png | 1024×1024 |
-| iPhone App - 60pt 2x | AppIcon-60@2x.png | 120×120 |
-| iPhone App - 60pt 3x | AppIcon-60@3x.png | 180×180 |
-| iPhone Settings - 29pt 2x | AppIcon-29@2x.png | 58×58 |
-| iPhone Settings - 29pt 3x | AppIcon-29@3x.png | 87×87 |
-| iPhone Spotlight - 40pt 2x | AppIcon-40@2x.png | 80×80 |
-| iPhone Spotlight - 40pt 3x | AppIcon-40@3x.png | 120×120 |
+| iPhone App - iOS 18+ 1024pt | AppIcon-1024.png | 1024×1024 |
+| iPhone App - 60pt 3x | AppIcon-180.png | 180×180 |
+| iPhone App - 60pt 2x | AppIcon-120.png | 120×120 |
+| iPhone Settings - 29pt 3x | AppIcon-87.png | 87×87 |
+| iPhone Settings - 29pt 2x | AppIcon-58.png | 58×58 |
+| iPhone Spotlight - 40pt 2x | AppIcon-80.png | 80×80 |
 | iPad App - 76pt 1x | AppIcon-76.png | 76×76 |
-| iPad App - 76pt 2x | AppIcon-76@2x.png | 152×152 |
-| iPad Pro App - 83.5pt 2x | AppIcon-83.5@2x.png | 167×167 |
+| iPad App - 76pt 2x | AppIcon-152.png | 152×152 |
+| iPad Pro App - 83.5pt 2x | AppIcon-167.png | 167×167 |
 
 ## Visual Guide
 
@@ -68,12 +67,14 @@ The icon features:
 
 If you want to modify the icon design:
 
-1. Edit `generate_icon.swift`
+1. Edit `generate_icon_fixed.swift`
 2. Run the generator:
    ```bash
-   swift generate_icon.swift
+   swift generate_icon_fixed.swift
    ```
 3. Re-add the updated icons to Assets.xcassets
+
+**Note**: Use `generate_icon_fixed.swift` (not `generate_icon.swift`) as it creates properly sized icons without retina scaling issues.
 
 ---
 

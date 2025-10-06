@@ -4,57 +4,59 @@ import Foundation
 import AppKit
 import CoreGraphics
 
-func generateAppIcon() {
-    let sizes: [(size: Int, name: String)] = [
-        (1024, "AppIcon"),
-        (180, "AppIcon-60@3x"),
-        (120, "AppIcon-60@2x"),
-        (87, "AppIcon-29@3x"),
-        (58, "AppIcon-29@2x"),
-        (80, "AppIcon-40@2x"),
-        (120, "AppIcon-40@3x"),
-        (76, "AppIcon-76"),
-        (152, "AppIcon-76@2x"),
-        (167, "AppIcon-83.5@2x")
-    ]
+func generateAppIcons() {
+    let sizes = [1024, 180, 120, 87, 58, 80, 76, 152, 167]
 
     let outputPath = "./AppIconImages"
     try? FileManager.default.createDirectory(atPath: outputPath, withIntermediateDirectories: true)
 
-    for sizeInfo in sizes {
-        let size = CGFloat(sizeInfo.size)
-        let image = createIconImage(size: size)
-
-        if let pngData = image.tiffRepresentation,
-           let bitmap = NSBitmapImageRep(data: pngData),
-           let data = bitmap.representation(using: .png, properties: [:]) {
-            let filePath = "\(outputPath)/\(sizeInfo.name).png"
-            try? data.write(to: URL(fileURLWithPath: filePath))
-            print("Generated: \(filePath)")
+    for size in sizes {
+        if let cgImage = createIconCGImage(size: size) {
+            let nsImage = NSImage(cgImage: cgImage, size: NSSize(width: size, height: size))
+            if let tiffData = nsImage.tiffRepresentation,
+               let bitmap = NSBitmapImageRep(data: tiffData),
+               let pngData = bitmap.representation(using: .png, properties: [:]) {
+                let filePath = "\(outputPath)/AppIcon-\(size).png"
+                try? pngData.write(to: URL(fileURLWithPath: filePath))
+                print("Generated: \(filePath) (\(size)x\(size))")
+            }
         }
     }
 }
 
-func createIconImage(size: CGFloat) -> NSImage {
-    let image = NSImage(size: NSSize(width: size, height: size))
+func createIconCGImage(size: Int) -> CGImage? {
+    let width = size
+    let height = size
+    let bitsPerComponent = 8
+    let bytesPerRow = width * 4
+    let colorSpace = CGColorSpaceCreateDeviceRGB()
 
-    image.lockFocus()
+    guard let context = CGContext(
+        data: nil,
+        width: width,
+        height: height,
+        bitsPerComponent: bitsPerComponent,
+        bytesPerRow: bytesPerRow,
+        space: colorSpace,
+        bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue
+    ) else {
+        return nil
+    }
 
-    let context = NSGraphicsContext.current!.cgContext
+    let cgSize = CGFloat(size)
 
     // Background gradient (blue)
-    let colorSpace = CGColorSpaceCreateDeviceRGB()
     let colors = [
         CGColor(red: 0.3, green: 0.5, blue: 1.0, alpha: 1.0),
         CGColor(red: 0.2, green: 0.4, blue: 0.9, alpha: 1.0)
     ] as CFArray
 
     let gradient = CGGradient(colorsSpace: colorSpace, colors: colors, locations: [0.0, 1.0])!
-    context.drawLinearGradient(gradient, start: CGPoint(x: 0, y: size), end: CGPoint(x: size, y: 0), options: [])
+    context.drawLinearGradient(gradient, start: CGPoint(x: 0, y: cgSize), end: CGPoint(x: cgSize, y: 0), options: [])
 
     // Calculate dimensions
-    let padding = size * 0.2
-    let gridSize = size - (padding * 2)
+    let padding = cgSize * 0.2
+    let gridSize = cgSize - (padding * 2)
     let squareSize = gridSize / 4.5
     let spacing = squareSize * 0.3
 
@@ -66,14 +68,14 @@ func createIconImage(size: CGFloat) -> NSImage {
 
             // Determine color based on position (gradient effect)
             let opacity = 0.7 + (Double(row * 3 + col) / 9.0) * 0.3
-            let color = NSColor(white: 1.0, alpha: opacity)
+            context.setFillColor(CGColor(red: 1.0, green: 1.0, blue: 1.0, alpha: opacity))
 
             let rect = CGRect(x: x, y: y, width: squareSize, height: squareSize)
             let cornerRadius = squareSize * 0.25
 
-            let path = NSBezierPath(roundedRect: rect, xRadius: cornerRadius, yRadius: cornerRadius)
-            color.setFill()
-            path.fill()
+            let path = CGPath(roundedRect: rect, cornerWidth: cornerRadius, cornerHeight: cornerRadius, transform: nil)
+            context.addPath(path)
+            context.fillPath()
         }
     }
 
@@ -81,7 +83,7 @@ func createIconImage(size: CGFloat) -> NSImage {
     let lastX = padding + 2 * (squareSize + spacing)
     let lastY = padding + 2 * (squareSize + spacing)
 
-    context.setLineWidth(size * 0.012)
+    context.setLineWidth(cgSize * 0.012)
     context.setStrokeColor(CGColor(red: 0.2, green: 0.4, blue: 0.9, alpha: 1.0))
     context.setLineCap(.round)
     context.setLineJoin(.round)
@@ -99,11 +101,9 @@ func createIconImage(size: CGFloat) -> NSImage {
     context.addLine(to: CGPoint(x: checkEndX, y: checkEndY))
     context.strokePath()
 
-    image.unlockFocus()
-
-    return image
+    return context.makeImage()
 }
 
 // Run the generator
-generateAppIcon()
-print("✅ App icons generated successfully!")
+generateAppIcons()
+print("✅ All app icons generated successfully!")

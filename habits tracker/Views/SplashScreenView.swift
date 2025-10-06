@@ -115,7 +115,7 @@ struct SplashScreenView: View {
         // Transition to main app
         DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) {
             withAnimation(.easeOut(duration: 0.5)) {
-                isActive = true
+                isActive = false
             }
         }
     }

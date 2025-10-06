@@ -54,52 +54,35 @@ func createIconCGImage(size: Int) -> CGImage? {
     let gradient = CGGradient(colorsSpace: colorSpace, colors: colors, locations: [0.0, 1.0])!
     context.drawLinearGradient(gradient, start: CGPoint(x: 0, y: cgSize), end: CGPoint(x: cgSize, y: 0), options: [])
 
-    // Calculate dimensions
-    let padding = cgSize * 0.2
-    let gridSize = cgSize - (padding * 2)
-    let squareSize = gridSize / 4.5
-    let spacing = squareSize * 0.3
+    // Calculate dimensions for 3x3 grid (matching splash screen)
+    let gridSpacing: CGFloat = 4
+    let squareSize = (cgSize * 0.5) / 3.0 - (gridSpacing * 2.0 / 3.0)  // 50% of icon size for the grid
 
-    // Draw 3x3 grid of rounded squares
+    // Calculate total grid size including spacing
+    let totalGridWidth = (squareSize * 3) + (gridSpacing * 2)
+    let totalGridHeight = (squareSize * 3) + (gridSpacing * 2)
+
+    // Center the grid
+    let startX = (cgSize - totalGridWidth) / 2
+    let startY = (cgSize - totalGridHeight) / 2
+
+    // Draw 3x3 grid of rounded squares (matching splash screen exactly)
     for row in 0..<3 {
         for col in 0..<3 {
-            let x = padding + CGFloat(col) * (squareSize + spacing)
-            let y = padding + CGFloat(row) * (squareSize + spacing)
+            let x = startX + CGFloat(col) * (squareSize + gridSpacing)
+            let y = startY + CGFloat(row) * (squareSize + gridSpacing)
 
-            // Determine color based on position (gradient effect)
-            let opacity = 0.7 + (Double(row * 3 + col) / 9.0) * 0.3
-            context.setFillColor(CGColor(red: 1.0, green: 1.0, blue: 1.0, alpha: opacity))
+            // White squares with full opacity (matching splash screen)
+            context.setFillColor(CGColor(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0))
 
             let rect = CGRect(x: x, y: y, width: squareSize, height: squareSize)
-            let cornerRadius = squareSize * 0.25
+            let cornerRadius = squareSize * 0.2
 
             let path = CGPath(roundedRect: rect, cornerWidth: cornerRadius, cornerHeight: cornerRadius, transform: nil)
             context.addPath(path)
             context.fillPath()
         }
     }
-
-    // Add subtle checkmark overlay on last square
-    let lastX = padding + 2 * (squareSize + spacing)
-    let lastY = padding + 2 * (squareSize + spacing)
-
-    context.setLineWidth(cgSize * 0.012)
-    context.setStrokeColor(CGColor(red: 0.2, green: 0.4, blue: 0.9, alpha: 1.0))
-    context.setLineCap(.round)
-    context.setLineJoin(.round)
-
-    let checkStartX = lastX + squareSize * 0.25
-    let checkStartY = lastY + squareSize * 0.5
-    let checkMidX = lastX + squareSize * 0.45
-    let checkMidY = lastY + squareSize * 0.7
-    let checkEndX = lastX + squareSize * 0.75
-    let checkEndY = lastY + squareSize * 0.3
-
-    context.beginPath()
-    context.move(to: CGPoint(x: checkStartX, y: checkStartY))
-    context.addLine(to: CGPoint(x: checkMidX, y: checkMidY))
-    context.addLine(to: CGPoint(x: checkEndX, y: checkEndY))
-    context.strokePath()
 
     return context.makeImage()
 }

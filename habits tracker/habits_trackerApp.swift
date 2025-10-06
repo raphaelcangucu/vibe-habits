@@ -28,12 +28,15 @@ struct habits_trackerApp: App {
 
     var body: some Scene {
         WindowGroup {
-            if showSplash {
-                SplashScreenView(isActive: $showSplash)
-            } else {
+            ZStack {
                 MainTabView()
-                    .modelContainer(sharedModelContainer)
+                    .opacity(showSplash ? 0 : 1)
+
+                if showSplash {
+                    SplashScreenView(isActive: $showSplash)
+                }
             }
         }
+        .modelContainer(sharedModelContainer)
     }
 }

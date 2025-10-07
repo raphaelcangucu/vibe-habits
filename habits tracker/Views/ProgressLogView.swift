@@ -13,6 +13,7 @@ struct ProgressLogView: View {
     @Environment(\.dismiss) private var dismiss
     let habit: Habit
     let store: HabitStore
+    let date: Date
 
     @State private var progressValue = ""
     @State private var note = ""
@@ -21,6 +22,12 @@ struct ProgressLogView: View {
     @State private var showingPhotoOptions = false
     @State private var showingCamera = false
     @FocusState private var isProgressFocused: Bool
+
+    init(habit: Habit, store: HabitStore, date: Date = Date()) {
+        self.habit = habit
+        self.store = store
+        self.date = date
+    }
 
     var body: some View {
         NavigationStack {
@@ -215,7 +222,7 @@ struct ProgressLogView: View {
     private func logProgress() {
         guard let value = Double(progressValue) else { return }
         let noteToSave = note.isEmpty ? nil : note
-        store.logProgress(for: habit, value: value, note: noteToSave, photoData: photoData)
+        store.logProgress(for: habit, date: date, value: value, note: noteToSave, photoData: photoData)
         dismiss()
     }
 }

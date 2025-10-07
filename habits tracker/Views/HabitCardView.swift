@@ -17,6 +17,7 @@ struct HabitCardView: View {
     @State private var showingProgressLog = false
     @State private var showingEditLog = false
     @State private var showingInsights = false
+    @State private var refreshID = UUID()
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -61,11 +62,12 @@ struct HabitCardView: View {
                                     .font(.caption2)
                                     .foregroundColor(.secondary)
 
-                                DaySquareView(day: day, habit: habit, store: store)
+                                DaySquareView(day: day, habit: habit, store: store, refreshTrigger: $refreshID)
                                     .frame(width: 32, height: 32)
                             }
                         }
                     }
+                    .id(refreshID)
                 }
                 .padding(.vertical, 8)
             }
@@ -210,7 +212,9 @@ struct DaySquareView: View {
     let day: DayData
     let habit: Habit
     let store: HabitStore
+    var refreshTrigger: Binding<UUID>?
     @State private var showingEditLog = false
+    @State private var showingProgressLog = false
 
     var body: some View {
         GeometryReader { geometry in
@@ -226,10 +230,26 @@ struct DaySquareView: View {
                 .onTapGesture {
                     if day.log != nil {
                         showingEditLog = true
+                    } else {
+                        // Allow logging for past days
+                        if habit.frequencyType == .daily {
+                            showingProgressLog = true
+                        } else {
+                            // For times/hours per week, just mark complete
+                            store.markComplete(for: habit, date: day.date)
+                            refreshTrigger?.wrappedValue = UUID()
+                        }
                     }
                 }
-                .sheet(isPresented: $showingEditLog) {
+                .sheet(isPresented: $showingEditLog, onDismiss: {
+                    refreshTrigger?.wrappedValue = UUID()
+                }) {
                     EditLogView(habit: habit, store: store, date: day.date, existingLog: day.log)
+                }
+                .sheet(isPresented: $showingProgressLog, onDismiss: {
+                    refreshTrigger?.wrappedValue = UUID()
+                }) {
+                    ProgressLogView(habit: habit, store: store, date: day.date)
                 }
         }
         .aspectRatio(1, contentMode: .fit)

@@ -13,6 +13,7 @@ struct InsightsView: View {
     let habit: Habit
     let store: HabitStore
     @State private var selectedPeriod: TimePeriod = .week
+    @State private var refreshID = UUID()
 
     var body: some View {
         NavigationStack {
@@ -54,11 +55,12 @@ struct InsightsView: View {
                                             .font(.caption2)
                                             .foregroundColor(.secondary)
 
-                                        DaySquareViewInsights(day: day, habit: habit, store: store)
+                                        DaySquareViewInsights(day: day, habit: habit, store: store, refreshTrigger: $refreshID)
                                             .frame(width: 40, height: 40)
                                     }
                                 }
                             }
+                            .id(refreshID)
                         } else if selectedPeriod == .month {
                             // Calendar view for current month
                             let weeks = store.getCurrentMonthCalendar(for: habit)
@@ -86,11 +88,12 @@ struct InsightsView: View {
                                     ForEach(weeks) { week in
                                         HStack(spacing: 4) {
                                             ForEach(week.days) { day in
-                                                CalendarDayView(day: day, habit: habit, store: store)
+                                                CalendarDayView(day: day, habit: habit, store: store, refreshTrigger: $refreshID)
                                             }
                                         }
                                     }
                                 }
+                                .id(refreshID)
                             }
                         } else {
                             // Year view - scrollable
@@ -100,12 +103,13 @@ struct InsightsView: View {
                                     ForEach(weeks) { week in
                                         VStack(spacing: 2) {
                                             ForEach(week.days) { day in
-                                                DaySquareViewInsights(day: day, habit: habit, store: store)
+                                                DaySquareViewInsights(day: day, habit: habit, store: store, refreshTrigger: $refreshID)
                                             }
                                         }
                                     }
                                 }
                                 .padding(.vertical, 4)
+                                .id(refreshID)
                             }
                         }
 
@@ -177,16 +181,10 @@ struct InsightsView: View {
                 }
                 .padding()
             }
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Done") {
-                        dismiss()
-                    }
-                }
-            }
+            .navigationTitle("Details")
+            .navigationBarTitleDisplayMode(.large)
         }
-        .presentationDetents([.medium, .large])
+        .presentationDetents([.large])
     }
 
     private var currentStreak: Int {
@@ -261,7 +259,9 @@ struct CalendarDayView: View {
     let day: DayData
     let habit: Habit
     let store: HabitStore
+    @Binding var refreshTrigger: UUID
     @State private var showingEditLog = false
+    @State private var showingProgressLog = false
 
     var body: some View {
         VStack(spacing: 2) {
@@ -286,10 +286,26 @@ struct CalendarDayView: View {
         .onTapGesture {
             if day.log != nil {
                 showingEditLog = true
+            } else {
+                // Allow logging for past days
+                if habit.frequencyType == .daily {
+                    showingProgressLog = true
+                } else {
+                    // For times/hours per week, just mark complete
+                    store.markComplete(for: habit, date: day.date)
+                    refreshTrigger = UUID()
+                }
             }
         }
-        .sheet(isPresented: $showingEditLog) {
+        .sheet(isPresented: $showingEditLog, onDismiss: {
+            refreshTrigger = UUID()
+        }) {
             EditLogView(habit: habit, store: store, date: day.date, existingLog: day.log)
+        }
+        .sheet(isPresented: $showingProgressLog, onDismiss: {
+            refreshTrigger = UUID()
+        }) {
+            ProgressLogView(habit: habit, store: store, date: day.date)
         }
     }
 
@@ -315,7 +331,9 @@ struct DaySquareViewInsights: View {
     let day: DayData
     let habit: Habit
     let store: HabitStore
+    @Binding var refreshTrigger: UUID
     @State private var showingEditLog = false
+    @State private var showingProgressLog = false
 
     var body: some View {
         RoundedRectangle(cornerRadius: 2)
@@ -328,10 +346,26 @@ struct DaySquareViewInsights: View {
             .onTapGesture {
                 if day.log != nil {
                     showingEditLog = true
+                } else {
+                    // Allow logging for past days
+                    if habit.frequencyType == .daily {
+                        showingProgressLog = true
+                    } else {
+                        // For times/hours per week, just mark complete
+                        store.markComplete(for: habit, date: day.date)
+                        refreshTrigger = UUID()
+                    }
                 }
             }
-            .sheet(isPresented: $showingEditLog) {
+            .sheet(isPresented: $showingEditLog, onDismiss: {
+                refreshTrigger = UUID()
+            }) {
                 EditLogView(habit: habit, store: store, date: day.date, existingLog: day.log)
+            }
+            .sheet(isPresented: $showingProgressLog, onDismiss: {
+                refreshTrigger = UUID()
+            }) {
+                ProgressLogView(habit: habit, store: store, date: day.date)
             }
     }
 

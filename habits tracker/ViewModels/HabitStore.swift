@@ -264,23 +264,45 @@ class HabitStore {
         let today = Date()
         var weeks: [WeekData] = []
 
+        let startDate: Date
         let weeksToShow: Int
+
         switch period {
         case .week:
+            // Current week starting from Sunday
+            guard let currentWeekStart = calendar.dateInterval(of: .weekOfYear, for: today)?.start else {
+                return []
+            }
+            startDate = currentWeekStart
             weeksToShow = 1
+
         case .month:
+            // Last 4 weeks from current week
+            guard let currentWeekStart = calendar.dateInterval(of: .weekOfYear, for: today)?.start,
+                  let fourWeeksAgo = calendar.date(byAdding: .weekOfYear, value: -3, to: currentWeekStart) else {
+                return []
+            }
+            startDate = fourWeeksAgo
             weeksToShow = 4
+
         case .year:
-            weeksToShow = 52
+            // Start from January 1st of current year
+            let year = calendar.component(.year, from: today)
+            guard let jan1 = calendar.date(from: DateComponents(year: year, month: 1, day: 1)),
+                  let yearStart = calendar.dateInterval(of: .weekOfYear, for: jan1)?.start else {
+                return []
+            }
+            startDate = yearStart
+
+            // Calculate weeks from Jan 1 to today
+            let components = calendar.dateComponents([.weekOfYear], from: yearStart, to: today)
+            weeksToShow = (components.weekOfYear ?? 0) + 1
         }
 
-        // Get the start of the current week (Sunday)
-        guard let currentWeekStart = calendar.dateInterval(of: .weekOfYear, for: today)?.start else {
-            return []
-        }
-
-        for weekOffset in (0..<weeksToShow).reversed() {
-            let weekStart = calendar.date(byAdding: .weekOfYear, value: -weekOffset, to: currentWeekStart)!
+        for weekOffset in 0..<weeksToShow {
+            guard let weekStart = calendar.date(byAdding: .weekOfYear, value: weekOffset, to: startDate) else {
+                continue
+            }
             let weekStartDay = calendar.startOfDay(for: weekStart)
 
             var days: [DayData] = []

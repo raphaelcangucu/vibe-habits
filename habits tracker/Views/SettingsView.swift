@@ -157,9 +157,19 @@ struct SettingsView: View {
                                         .foregroundColor(.blue)
                                         .font(.body)
 
-                                    Text("Tag me @raphaelcangucu and maybe I'll build it!")
-                                        .font(.subheadline)
-                                        .foregroundColor(.secondary)
+                                    HStack(spacing: 4) {
+                                        Text("Tag me")
+                                            .font(.subheadline)
+                                            .foregroundColor(.secondary)
+
+                                        Link("@raphaelcangucu", destination: URL(string: "https://twitter.com/raphaelcangucu")!)
+                                            .font(.subheadline)
+                                            .fontWeight(.medium)
+
+                                        Text("and maybe I'll build it!")
+                                            .font(.subheadline)
+                                            .foregroundColor(.secondary)
+                                    }
                                 }
                             }
 

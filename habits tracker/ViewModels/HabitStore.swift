@@ -240,7 +240,7 @@ class HabitStore {
         for dayOffset in 0..<7 {
             if let date = calendar.date(byAdding: .day, value: dayOffset, to: weekStart) {
                 let log = getLog(for: habit, date: date)
-                let intensity = calculateIntensity(value: log?.value ?? 0, target: habit.targetValue)
+                let intensity = calculateIntensity(habit: habit, log: log)
                 let isToday = calendar.isDateInToday(date)
 
                 days.append(DayData(date: date, intensity: intensity, isToday: isToday, log: log, isCurrentMonth: true))
@@ -274,7 +274,7 @@ class HabitStore {
             for dayOffset in 0..<7 {
                 if let date = calendar.date(byAdding: .day, value: dayOffset, to: weekStartDay) {
                     let log = getLog(for: habit, date: date)
-                    let intensity = calculateIntensity(value: log?.value ?? 0, target: habit.targetValue)
+                    let intensity = calculateIntensity(habit: habit, log: log)
                     let isToday = calendar.isDateInToday(date)
 
                     days.append(DayData(date: date, intensity: intensity, isToday: isToday, log: log, isCurrentMonth: true))
@@ -311,7 +311,7 @@ class HabitStore {
 
             for _ in 0..<7 {
                 let log = getLog(for: habit, date: currentDate)
-                let intensity = calculateIntensity(value: log?.value ?? 0, target: habit.targetValue)
+                let intensity = calculateIntensity(habit: habit, log: log)
                 let isToday = calendar.isDateInToday(currentDate)
                 let isCurrentMonth = calendar.isDate(currentDate, equalTo: today, toGranularity: .month)
 
@@ -420,7 +420,7 @@ class HabitStore {
             for dayOffset in 0..<7 {
                 if let date = calendar.date(byAdding: .day, value: dayOffset, to: weekStartDay) {
                     let log = getLog(for: habit, date: date)
-                    let intensity = calculateIntensity(value: log?.value ?? 0, target: habit.targetValue)
+                    let intensity = calculateIntensity(habit: habit, log: log)
                     let isToday = calendar.isDateInToday(date)
 
                     days.append(DayData(date: date, intensity: intensity, isToday: isToday, log: log, isCurrentMonth: true))
@@ -433,10 +433,17 @@ class HabitStore {
         return weeks
     }
 
-    private func calculateIntensity(value: Double, target: Double) -> IntensityLevel {
-        guard value > 0 else { return .none }
+    private func calculateIntensity(habit: Habit, log: HabitLog?) -> IntensityLevel {
+        guard let log = log else { return .none }
 
-        let percentage = value / target
+        // For times/hours per week, use completion status (binary: completed or not)
+        if habit.frequencyType == .timesPerWeek || habit.frequencyType == .hoursPerWeek {
+            return log.completed ? .veryHigh : .none
+        }
+
+        // For daily habits, use percentage-based intensity
+        guard log.value > 0 else { return .none }
+        let percentage = log.value / habit.targetValue
 
         if percentage >= 1.5 {
             return .veryHigh

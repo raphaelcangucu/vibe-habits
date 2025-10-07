@@ -286,17 +286,13 @@ class HabitStore {
             weeksToShow = 4
 
         case .year:
-            // Start from January 1st of current year
-            let year = calendar.component(.year, from: today)
-            guard let jan1 = calendar.date(from: DateComponents(year: year, month: 1, day: 1)),
-                  let yearStart = calendar.dateInterval(of: .weekOfYear, for: jan1)?.start else {
+            // Start from Sunday of current week, go back 52 weeks
+            guard let currentWeekStart = calendar.dateInterval(of: .weekOfYear, for: today)?.start,
+                  let yearStart = calendar.date(byAdding: .weekOfYear, value: -51, to: currentWeekStart) else {
                 return []
             }
             startDate = yearStart
-
-            // Calculate weeks from Jan 1 to today
-            let components = calendar.dateComponents([.weekOfYear], from: yearStart, to: today)
-            weeksToShow = (components.weekOfYear ?? 0) + 1
+            weeksToShow = 52
         }
 
         for weekOffset in 0..<weeksToShow {

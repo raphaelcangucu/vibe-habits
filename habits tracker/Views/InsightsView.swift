@@ -99,18 +99,68 @@ struct InsightsView: View {
                             // Year view - GitHub style with scroll
                             let weeks = store.getWeeksForPeriod(for: habit, period: selectedPeriod)
 
-                            ScrollView(.horizontal, showsIndicators: false) {
-                                HStack(alignment: .top, spacing: 3) {
-                                    ForEach(weeks) { week in
-                                        VStack(spacing: 3) {
-                                            ForEach(week.days) { day in
-                                                DaySquareViewInsights(day: day, habit: habit, store: store, refreshTrigger: $refreshID)
-                                                    .frame(width: 12, height: 12)
+                            VStack(alignment: .leading, spacing: 0) {
+                                // Month labels
+                                HStack(spacing: 0) {
+                                    // Space for day labels
+                                    Text("")
+                                        .frame(width: 30)
+
+                                    ScrollView(.horizontal, showsIndicators: false) {
+                                        HStack(spacing: 0) {
+                                            ForEach(Array(weeks.enumerated()), id: \.offset) { index, week in
+                                                if let firstDay = week.days.first,
+                                                   Calendar.current.component(.day, from: firstDay.date) <= 7 {
+                                                    Text(monthLabel(for: firstDay.date))
+                                                        .font(.caption2)
+                                                        .foregroundColor(.secondary)
+                                                        .frame(width: CGFloat(weeksInMonth(for: firstDay.date)) * 15, alignment: .leading)
+                                                } else {
+                                                    Color.clear.frame(width: 15)
+                                                }
                                             }
                                         }
                                     }
                                 }
-                                .padding(.vertical, 4)
+                                .padding(.bottom, 4)
+
+                                // Grid with day labels
+                                HStack(alignment: .top, spacing: 3) {
+                                    // Day labels on the left
+                                    VStack(spacing: 3) {
+                                        Text("Mon")
+                                            .font(.caption2)
+                                            .foregroundColor(.secondary)
+                                            .frame(height: 12)
+                                        Spacer().frame(height: 12)
+                                        Text("Wed")
+                                            .font(.caption2)
+                                            .foregroundColor(.secondary)
+                                            .frame(height: 12)
+                                        Spacer().frame(height: 12)
+                                        Text("Fri")
+                                            .font(.caption2)
+                                            .foregroundColor(.secondary)
+                                            .frame(height: 12)
+                                        Spacer().frame(height: 24)
+                                    }
+                                    .frame(width: 30, alignment: .leading)
+
+                                    // Scrollable grid
+                                    ScrollView(.horizontal, showsIndicators: false) {
+                                        HStack(alignment: .top, spacing: 3) {
+                                            ForEach(weeks) { week in
+                                                VStack(spacing: 3) {
+                                                    ForEach(week.days) { day in
+                                                        DaySquareViewInsights(day: day, habit: habit, store: store, refreshTrigger: $refreshID)
+                                                            .frame(width: 12, height: 12)
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        .padding(.vertical, 4)
+                                    }
+                                }
                             }
                             .id(refreshID)
                         }
@@ -252,6 +302,18 @@ struct InsightsView: View {
         let formatter = DateFormatter()
         formatter.dateFormat = "MMMM yyyy"
         return formatter.string(from: Date())
+    }
+
+    private func monthLabel(for date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MMM"
+        return formatter.string(from: date)
+    }
+
+    private func weeksInMonth(for date: Date) -> Int {
+        let calendar = Calendar.current
+        let range = calendar.range(of: .weekOfMonth, in: .month, for: date)
+        return range?.count ?? 4
     }
 }
 

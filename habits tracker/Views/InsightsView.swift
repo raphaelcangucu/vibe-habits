@@ -96,21 +96,33 @@ struct InsightsView: View {
                                 .id(refreshID)
                             }
                         } else {
-                            // Year view - scrollable
+                            // Year view - GitHub style (no scroll, compact)
                             let weeks = store.getWeeksForPeriod(for: habit, period: selectedPeriod)
-                            ScrollView(.horizontal, showsIndicators: false) {
-                                HStack(spacing: 2) {
+
+                            VStack(spacing: 8) {
+                                // Month labels
+                                HStack(spacing: 0) {
+                                    ForEach(["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"], id: \.self) { month in
+                                        Text(month)
+                                            .font(.caption2)
+                                            .foregroundColor(.secondary)
+                                            .frame(maxWidth: .infinity, alignment: .leading)
+                                    }
+                                }
+
+                                // Contribution grid
+                                HStack(alignment: .top, spacing: 2) {
                                     ForEach(weeks) { week in
                                         VStack(spacing: 2) {
                                             ForEach(week.days) { day in
                                                 DaySquareViewInsights(day: day, habit: habit, store: store, refreshTrigger: $refreshID)
+                                                    .frame(width: 8, height: 8)
                                             }
                                         }
                                     }
                                 }
-                                .padding(.vertical, 4)
-                                .id(refreshID)
                             }
+                            .id(refreshID)
                         }
 
                         // Color legend

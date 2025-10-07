@@ -274,8 +274,13 @@ class HabitStore {
             weeksToShow = 52
         }
 
+        // Get the start of the current week (Sunday)
+        guard let currentWeekStart = calendar.dateInterval(of: .weekOfYear, for: today)?.start else {
+            return []
+        }
+
         for weekOffset in (0..<weeksToShow).reversed() {
-            let weekStart = calendar.date(byAdding: .weekOfYear, value: -weekOffset, to: today)!
+            let weekStart = calendar.date(byAdding: .weekOfYear, value: -weekOffset, to: currentWeekStart)!
             let weekStartDay = calendar.startOfDay(for: weekStart)
 
             var days: [DayData] = []

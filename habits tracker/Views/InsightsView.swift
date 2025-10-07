@@ -96,40 +96,21 @@ struct InsightsView: View {
                                 .id(refreshID)
                             }
                         } else {
-                            // Year view - GitHub style (no scroll, compact)
+                            // Year view - GitHub style with scroll
                             let weeks = store.getWeeksForPeriod(for: habit, period: selectedPeriod)
 
-                            VStack(spacing: 4) {
-                                // Month labels
-                                HStack(spacing: 0) {
-                                    ForEach(["J", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D"], id: \.self) { month in
-                                        Text(month)
-                                            .font(.system(size: 8))
-                                            .foregroundColor(.secondary)
-                                            .frame(maxWidth: .infinity, alignment: .leading)
-                                    }
-                                }
-                                .padding(.leading, 2)
-
-                                // Contribution grid
-                                HStack(alignment: .top, spacing: 1) {
+                            ScrollView(.horizontal, showsIndicators: false) {
+                                HStack(alignment: .top, spacing: 3) {
                                     ForEach(weeks) { week in
-                                        VStack(spacing: 1) {
+                                        VStack(spacing: 3) {
                                             ForEach(week.days) { day in
-                                                RoundedRectangle(cornerRadius: 1)
-                                                    .fill(colorForIntensity(day.intensity))
-                                                    .frame(width: 6, height: 6)
-                                                    .overlay(
-                                                        RoundedRectangle(cornerRadius: 1)
-                                                            .stroke(day.isToday ? Color.blue : Color.clear, lineWidth: 1)
-                                                    )
-                                                    .onTapGesture {
-                                                        handleDayTap(day: day)
-                                                    }
+                                                DaySquareViewInsights(day: day, habit: habit, store: store, refreshTrigger: $refreshID)
+                                                    .frame(width: 12, height: 12)
                                             }
                                         }
                                     }
                                 }
+                                .padding(.vertical, 4)
                             }
                             .id(refreshID)
                         }
@@ -271,25 +252,6 @@ struct InsightsView: View {
         let formatter = DateFormatter()
         formatter.dateFormat = "MMMM yyyy"
         return formatter.string(from: Date())
-    }
-
-    private func colorForIntensity(_ intensity: IntensityLevel) -> Color {
-        switch intensity {
-        case .none:
-            return Color(.systemGray5)
-        case .low:
-            return Color.green.opacity(0.3)
-        case .medium:
-            return Color.green.opacity(0.6)
-        case .high:
-            return Color.green
-        case .veryHigh:
-            return Color.green.opacity(1.0)
-        }
-    }
-
-    private func handleDayTap(day: DayData) {
-        // Handle tap - will add sheet presentation for this
     }
 }
 

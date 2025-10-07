@@ -124,7 +124,7 @@ struct HabitCardView: View {
                     HStack(spacing: 6) {
                         Image(systemName: "chart.bar.fill")
                             .font(.body)
-                        Text("Details")
+                        Text("Insights")
                             .font(.subheadline)
                             .fontWeight(.medium)
                     }

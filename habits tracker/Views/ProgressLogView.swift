@@ -31,60 +31,69 @@ struct ProgressLogView: View {
 
     var body: some View {
         NavigationStack {
-            VStack(spacing: 24) {
-                VStack(spacing: 8) {
-                    Image(systemName: "chart.line.uptrend.xyaxis")
-                        .font(.system(size: 50))
-                        .foregroundStyle(.blue.gradient)
-
-                    Text(habit.name)
-                        .font(.title2)
-                        .fontWeight(.semibold)
-
-                    Text("Target: \(formatValue(habit.targetValue))")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                }
-                .padding(.top, 40)
-
-                VStack(spacing: 16) {
+            ZStack {
+                VStack(spacing: 0) {
+                    // Header
                     VStack(spacing: 12) {
-                        Text("Enter Progress")
-                            .font(.headline)
+                        RoundedRectangle(cornerRadius: 2.5)
+                            .fill(Color(.systemGray4))
+                            .frame(width: 36, height: 5)
+                            .padding(.top, 8)
 
-                        ZStack {
-                            // Large tappable background
-                            Color(.systemGray6)
-                                .frame(height: 100)
-                                .cornerRadius(12)
-                                .onTapGesture {
-                                    isProgressFocused = true
-                                }
+                        HStack(alignment: .top) {
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text(habit.name)
+                                    .font(.title3)
+                                    .fontWeight(.semibold)
 
-                            // Display text
-                            if progressValue.isEmpty {
-                                Text("Tap to enter")
-                                    .font(.system(size: 48, weight: .bold))
-                                    .foregroundColor(.secondary.opacity(0.5))
-                                    .allowsHitTesting(false)
-                            } else {
-                                Text(progressValue)
-                                    .font(.system(size: 48, weight: .bold))
-                                    .foregroundColor(.primary)
-                                    .allowsHitTesting(false)
+                                Text("Target: \(formatValue(habit.targetValue))")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
                             }
+
+                            Spacer()
+
+                            Text(formatDate(date))
+                                .font(.subheadline)
+                                .foregroundColor(.secondary)
                         }
-                        .frame(maxWidth: .infinity)
+                        .padding(.horizontal, 24)
+                        .padding(.vertical, 8)
                     }
-                    .padding(.bottom, 8)
+                    .padding(.bottom, 16)
 
-                    // Hidden TextField for actual input
-                    TextField("", text: $progressValue)
-                        .keyboardType(.decimalPad)
-                        .focused($isProgressFocused)
-                        .frame(width: 0, height: 0)
-                        .opacity(0)
+                    // Progress Input for Daily Habits (outside ScrollView)
+                    if habit.frequencyType == .daily {
+                        VStack(spacing: 4) {
+                            Text("Enter Progress")
+                                .font(.subheadline)
+                                .foregroundColor(.secondary)
 
+                            Button {
+                                isProgressFocused = true
+                            } label: {
+                                ZStack {
+                                    RoundedRectangle(cornerRadius: 16)
+                                        .fill(Color(.systemGray6))
+                                        .frame(width: 180, height: 100)
+
+                                    if progressValue.isEmpty {
+                                        Text("0")
+                                            .font(.system(size: 52, weight: .semibold, design: .rounded))
+                                            .foregroundColor(.secondary.opacity(0.5))
+                                    } else {
+                                        Text(progressValue)
+                                            .font(.system(size: 52, weight: .semibold, design: .rounded))
+                                            .foregroundColor(.primary)
+                                    }
+                                }
+                            }
+                            .buttonStyle(.plain)
+                        }
+                        .padding(.bottom, 8)
+                    }
+
+                    // Input Section
                     ScrollView {
                         VStack(spacing: 16) {
 
@@ -149,6 +158,7 @@ struct ProgressLogView: View {
                                 }
                             }
                         }
+                        .padding(.horizontal, 24)
                         .sheet(isPresented: $showingCamera) {
                             ImagePicker(photoData: $photoData, sourceType: .camera)
                         }
@@ -173,43 +183,93 @@ struct ProgressLogView: View {
                                 .background(Color(.systemGray6))
                                 .cornerRadius(12)
                         }
+                        .padding(.horizontal, 24)
                     }
                 }
+                .padding(.bottom, 16)
 
                 Spacer()
 
-                VStack(spacing: 12) {
-                    Button {
-                        logProgress()
-                    } label: {
-                        Text("Log Progress")
-                            .font(.headline)
+                // Action Buttons
+                VStack(spacing: 10) {
+                    if habit.frequencyType == .daily {
+                        // Daily habit: Log progress
+                        Button {
+                            logProgress()
+                        } label: {
+                            HStack(spacing: 8) {
+                                Image(systemName: "checkmark.circle.fill")
+                                    .font(.body)
+                                Text("Log Progress")
+                                    .fontWeight(.semibold)
+                            }
+                            .font(.body)
                             .frame(maxWidth: .infinity)
-                            .padding(.vertical, 16)
+                            .padding(.vertical, 14)
                             .background(.blue)
                             .foregroundColor(.white)
                             .cornerRadius(12)
+                        }
+                        .disabled(progressValue.isEmpty || Double(progressValue) == nil)
+                        .opacity((progressValue.isEmpty || Double(progressValue) == nil) ? 0.5 : 1.0)
+                    } else {
+                        // Times/Hours per week: Mark complete
+                        Button {
+                            markComplete()
+                        } label: {
+                            HStack(spacing: 8) {
+                                Image(systemName: "checkmark.circle.fill")
+                                    .font(.body)
+                                Text("Mark Complete")
+                                    .fontWeight(.semibold)
+                            }
+                            .font(.body)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 14)
+                            .background(.blue)
+                            .foregroundColor(.white)
+                            .cornerRadius(12)
+                        }
                     }
-                    .disabled(progressValue.isEmpty || Double(progressValue) == nil)
 
-                    Button("Cancel") {
+                    Button {
                         dismiss()
+                    } label: {
+                        Text("Cancel")
+                            .font(.body)
+                            .foregroundColor(.secondary)
+                            .padding(.vertical, 8)
                     }
-                    .foregroundColor(.secondary)
                 }
-                .padding(.bottom, 20)
+                .padding(.horizontal, 24)
+                .padding(.bottom, 24)
             }
+                    .navigationBarTitleDisplayMode(.inline)
+                    .onAppear {
+                        // Auto-focus for daily habits
+                        if habit.frequencyType == .daily {
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                                isProgressFocused = true
+                            }
+                        }
+                    }
+
+                // Hidden TextField for keyboard input
+                TextField("", text: $progressValue)
+                    .keyboardType(.decimalPad)
+                    .focused($isProgressFocused)
+                    .frame(width: 0, height: 0)
+                    .opacity(0)
             }
-            .padding(.horizontal, 24)
-            .navigationBarTitleDisplayMode(.inline)
         }
-        .presentationDetents([.medium])
-        .onAppear {
-            // Auto-focus the text field when view appears
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                isProgressFocused = true
-            }
-        }
+        .presentationDetents([.medium, .large])
+        .presentationDragIndicator(.hidden)
+    }
+
+    private func formatDate(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .medium
+        return formatter.string(from: date)
     }
 
     private func formatValue(_ value: Double) -> String {
@@ -223,6 +283,12 @@ struct ProgressLogView: View {
         guard let value = Double(progressValue) else { return }
         let noteToSave = note.isEmpty ? nil : note
         store.logProgress(for: habit, date: date, value: value, note: noteToSave, photoData: photoData)
+        dismiss()
+    }
+
+    private func markComplete() {
+        let noteToSave = note.isEmpty ? nil : note
+        store.logProgress(for: habit, date: date, value: 1.0, note: noteToSave, photoData: photoData)
         dismiss()
     }
 }

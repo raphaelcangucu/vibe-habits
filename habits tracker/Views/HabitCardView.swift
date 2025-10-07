@@ -15,6 +15,7 @@ struct HabitCardView: View {
     @State private var isEditingName = false
     @State private var editedName = ""
     @State private var showingProgressLog = false
+    @State private var showingEditLog = false
     @State private var showingInsights = false
 
     var body: some View {
@@ -45,26 +46,73 @@ struct HabitCardView: View {
                     .foregroundColor(.secondary)
             }
 
+            // Current Week View (for daily, timesPerWeek, hoursPerWeek)
+            if habit.frequencyType != .daily || true {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("This Week")
+                        .font(.caption)
+                        .fontWeight(.semibold)
+                        .foregroundColor(.secondary)
+
+                    HStack(spacing: 4) {
+                        ForEach(store.getCurrentWeek(for: habit)) { day in
+                            VStack(spacing: 4) {
+                                Text(dayLabel(for: day.date))
+                                    .font(.caption2)
+                                    .foregroundColor(.secondary)
+
+                                DaySquareView(day: day, habit: habit, store: store)
+                                    .frame(width: 32, height: 32)
+                            }
+                        }
+                    }
+                }
+                .padding(.vertical, 8)
+            }
+
             // Action Button
             HStack(spacing: 12) {
                 Button {
+                    let todayLog = store.getLog(for: habit, date: Date())
+
                     if habit.frequencyType == .daily {
-                        showingProgressLog = true
+                        // For daily habits: open edit if exists, otherwise log new
+                        if todayLog != nil {
+                            showingEditLog = true
+                        } else {
+                            showingProgressLog = true
+                        }
                     } else {
-                        store.markComplete(for: habit)
+                        // Toggle completion for times/hours per week
+                        if todayLog != nil {
+                            store.deleteLog(for: habit, date: Date())
+                        } else {
+                            store.markComplete(for: habit)
+                        }
                     }
                 } label: {
+                    let todayLog = store.getLog(for: habit, date: Date())
+                    let hasProgress = todayLog != nil
+
                     HStack(spacing: 8) {
-                        Image(systemName: habit.frequencyType == .daily ? "plus.circle.fill" : "checkmark.circle.fill")
-                            .font(.body)
-                        Text(habit.frequencyType == .daily ? "Log Progress" : "Mark Complete")
-                            .font(.subheadline)
-                            .fontWeight(.medium)
+                        if habit.frequencyType == .daily {
+                            Image(systemName: hasProgress ? "pencil.circle.fill" : "plus.circle.fill")
+                                .font(.body)
+                            Text(hasProgress ? "Edit Progress" : "Log Progress")
+                                .font(.subheadline)
+                                .fontWeight(.medium)
+                        } else {
+                            Image(systemName: hasProgress ? "xmark.circle.fill" : "checkmark.circle.fill")
+                                .font(.body)
+                            Text(hasProgress ? "Unmark as Completed" : "Mark Complete")
+                                .font(.subheadline)
+                                .fontWeight(.medium)
+                        }
                     }
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 10)
-                    .background(Color.blue.opacity(0.1))
-                    .foregroundColor(.blue)
+                    .background(hasProgress && habit.frequencyType != .daily ? Color.red.opacity(0.1) : Color.blue.opacity(0.1))
+                    .foregroundColor(hasProgress && habit.frequencyType != .daily ? .red : .blue)
                     .cornerRadius(8)
                 }
 
@@ -86,21 +134,13 @@ struct HabitCardView: View {
                 }
             }
 
-            // 12-week streak grid
-            VStack(spacing: 8) {
-                StreakGridView(weeks: store.getLast12Weeks(for: habit), habit: habit, store: store)
-
-                // Stats bar
-                HStack(spacing: 16) {
-                    StatItem(label: "This Week", value: formatValue(store.getWeekValue(for: habit)))
-                    StatItem(label: "Total Days", value: "\(store.getTotalDays(for: habit))")
-                    StatItem(label: "Best Streak", value: "\(store.getLongestStreak(for: habit))")
-                }
-                .font(.caption)
-
-                // Color legend
-                ColorLegendView()
+            // Stats bar
+            HStack(spacing: 16) {
+                StatItem(label: "This Week", value: formatValue(store.getWeekValue(for: habit)))
+                StatItem(label: "Total Days", value: "\(store.getTotalDays(for: habit))")
+                StatItem(label: "Best Streak", value: "\(store.getLongestStreak(for: habit))")
             }
+            .font(.caption)
         }
         .padding()
         .background(Color(.systemBackground))
@@ -108,6 +148,11 @@ struct HabitCardView: View {
         .shadow(color: .black.opacity(0.05), radius: 8, x: 0, y: 2)
         .sheet(isPresented: $showingProgressLog) {
             ProgressLogView(habit: habit, store: store)
+        }
+        .sheet(isPresented: $showingEditLog) {
+            if let todayLog = store.getLog(for: habit, date: Date()) {
+                EditLogView(habit: habit, store: store, date: Date(), existingLog: todayLog)
+            }
         }
         .sheet(isPresented: $showingInsights) {
             InsightsView(habit: habit, store: store)
@@ -130,6 +175,12 @@ struct HabitCardView: View {
             store.updateHabitName(habit: habit, newName: editedName)
         }
         isEditingName = false
+    }
+
+    private func dayLabel(for date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "EEE"
+        return String(formatter.string(from: date).prefix(1))
     }
 }
 

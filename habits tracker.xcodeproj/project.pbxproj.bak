@@ -400,8 +400,6 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "Vibe Habits";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
-				INFOPLIST_KEY_NSCameraUsageDescription = "Vibe Habits needs access to your camera to capture photos for your habit logs and track your progress visually.";
-				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Vibe Habits needs access to your photo library to select photos for your habit logs and track your progress visually.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -437,8 +435,6 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "Vibe Habits";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
-				INFOPLIST_KEY_NSCameraUsageDescription = "Vibe Habits needs access to your camera to capture photos for your habit logs and track your progress visually.";
-				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Vibe Habits needs access to your photo library to select photos for your habit logs and track your progress visually.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

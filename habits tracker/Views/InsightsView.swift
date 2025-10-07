@@ -12,41 +12,130 @@ struct InsightsView: View {
     @Environment(\.dismiss) private var dismiss
     let habit: Habit
     let store: HabitStore
+    @State private var selectedPeriod: TimePeriod = .week
 
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: 24) {
                     // Header
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(habit.name)
-                            .font(.title2)
-                            .fontWeight(.bold)
+                    HStack(alignment: .top) {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(habit.name)
+                                .font(.title2)
+                                .fontWeight(.bold)
 
-                        Text("Progress Insights")
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
+                            Text("Progress Insights")
+                                .font(.subheadline)
+                                .foregroundColor(.secondary)
+                        }
+
+                        Spacer()
                     }
-                    .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.top, 8)
+
+                    // Period Picker
+                    Picker("Time Period", selection: $selectedPeriod) {
+                        ForEach(TimePeriod.allCases, id: \.self) { period in
+                            Text(period.displayName).tag(period)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+
+                    // Streak Grid for Selected Period
+                    VStack(spacing: 8) {
+                        if selectedPeriod == .week {
+                            // Single week row view
+                            let weeks = store.getWeeksForPeriod(for: habit, period: selectedPeriod)
+                            HStack(spacing: 4) {
+                                ForEach(weeks.first?.days ?? []) { day in
+                                    VStack(spacing: 4) {
+                                        Text(dayLabel(for: day.date))
+                                            .font(.caption2)
+                                            .foregroundColor(.secondary)
+
+                                        DaySquareViewInsights(day: day, habit: habit, store: store)
+                                            .frame(width: 40, height: 40)
+                                    }
+                                }
+                            }
+                        } else if selectedPeriod == .month {
+                            // Calendar view for current month
+                            let weeks = store.getCurrentMonthCalendar(for: habit)
+
+                            VStack(spacing: 8) {
+                                // Month header
+                                Text(currentMonthName())
+                                    .font(.headline)
+                                    .fontWeight(.semibold)
+
+                                // Day labels (S M T W T F S)
+                                HStack(spacing: 0) {
+                                    ForEach(["S", "M", "T", "W", "T", "F", "S"], id: \.self) { day in
+                                        Text(day)
+                                            .font(.caption)
+                                            .fontWeight(.medium)
+                                            .foregroundColor(.secondary)
+                                            .frame(maxWidth: .infinity)
+                                    }
+                                }
+                                .padding(.bottom, 4)
+
+                                // Calendar grid
+                                VStack(spacing: 4) {
+                                    ForEach(weeks) { week in
+                                        HStack(spacing: 4) {
+                                            ForEach(week.days) { day in
+                                                CalendarDayView(day: day, habit: habit, store: store)
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        } else {
+                            // Year view - scrollable
+                            let weeks = store.getWeeksForPeriod(for: habit, period: selectedPeriod)
+                            ScrollView(.horizontal, showsIndicators: false) {
+                                HStack(spacing: 2) {
+                                    ForEach(weeks) { week in
+                                        VStack(spacing: 2) {
+                                            ForEach(week.days) { day in
+                                                DaySquareViewInsights(day: day, habit: habit, store: store)
+                                            }
+                                        }
+                                    }
+                                }
+                                .padding(.vertical, 4)
+                            }
+                        }
+
+                        // Color legend
+                        ColorLegendView()
+                    }
+                    .padding()
+                    .background(Color(.systemBackground))
+                    .cornerRadius(12)
+                    .shadow(color: .black.opacity(0.05), radius: 4, x: 0, y: 2)
 
                     // Metrics Grid
                     VStack(spacing: 12) {
+                        let stats = store.getStatisticsForPeriod(for: habit, period: selectedPeriod)
+
                         HStack(spacing: 12) {
                             MetricCardCompact(
                                 icon: "trophy.fill",
                                 iconColor: .green,
                                 title: "Longest Streak",
-                                value: "\(store.getLongestStreak(for: habit))",
+                                value: "\(stats.longestStreak)",
                                 subtitle: "days"
                             )
 
                             MetricCardCompact(
                                 icon: "calendar",
                                 iconColor: .blue,
-                                title: "Total Days",
-                                value: "\(store.getTotalDays(for: habit))",
-                                subtitle: "completed"
+                                title: "Completed Days",
+                                value: "\(stats.completedDays)",
+                                subtitle: "in period"
                             )
                         }
 
@@ -55,26 +144,18 @@ struct InsightsView: View {
                                 icon: "chart.line.uptrend.xyaxis",
                                 iconColor: .purple,
                                 title: "Completion Rate",
-                                value: "\(Int(store.getCompletionRate(for: habit) * 100))%",
-                                subtitle: "of all days"
+                                value: "\(Int(stats.completionRate * 100))%",
+                                subtitle: "of period"
                             )
 
                             MetricCardCompact(
-                                icon: "star.fill",
-                                iconColor: .yellow,
-                                title: "Perfect Days",
-                                value: "\(store.getPerfectDays(for: habit))",
-                                subtitle: "completed"
+                                icon: "flame.fill",
+                                iconColor: .orange,
+                                title: "Total Value",
+                                value: formatValue(stats.totalValue),
+                                subtitle: "cumulative"
                             )
                         }
-
-                        MetricCard(
-                            icon: "flame.fill",
-                            iconColor: .orange,
-                            title: "Total Completed",
-                            value: formatValue(store.getTotalCompleted(for: habit)),
-                            subtitle: "cumulative count"
-                        )
                     }
 
                     // Motivational Message
@@ -159,6 +240,114 @@ struct InsightsView: View {
             return "\(Int(value))"
         }
         return String(format: "%.1f", value)
+    }
+
+    private func dayLabel(for date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "EEE"
+        return String(formatter.string(from: date).prefix(1))
+    }
+
+    private func currentMonthName() -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MMMM yyyy"
+        return formatter.string(from: Date())
+    }
+}
+
+// MARK: - Calendar Day View
+
+struct CalendarDayView: View {
+    let day: DayData
+    let habit: Habit
+    let store: HabitStore
+    @State private var showingEditLog = false
+
+    var body: some View {
+        VStack(spacing: 2) {
+            Text("\(Calendar.current.component(.day, from: day.date))")
+                .font(.caption)
+                .fontWeight(day.isToday ? .bold : .regular)
+                .foregroundColor(day.isCurrentMonth ? .primary : .secondary.opacity(0.3))
+
+            RoundedRectangle(cornerRadius: 4)
+                .fill(colorForIntensity(day.intensity))
+                .frame(height: 8)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 4)
+                        .stroke(day.isToday ? Color.blue : Color.clear, lineWidth: 2)
+                )
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 4)
+        .background(day.isToday ? Color.blue.opacity(0.1) : Color.clear)
+        .cornerRadius(8)
+        .opacity(day.isCurrentMonth ? 1.0 : 0.3)
+        .onTapGesture {
+            if day.log != nil {
+                showingEditLog = true
+            }
+        }
+        .sheet(isPresented: $showingEditLog) {
+            EditLogView(habit: habit, store: store, date: day.date, existingLog: day.log)
+        }
+    }
+
+    private func colorForIntensity(_ intensity: IntensityLevel) -> Color {
+        switch intensity {
+        case .none:
+            return Color(.systemGray5)
+        case .low:
+            return Color.green.opacity(0.3)
+        case .medium:
+            return Color.green.opacity(0.6)
+        case .high:
+            return Color.green
+        case .veryHigh:
+            return Color.green.opacity(1.0)
+        }
+    }
+}
+
+// MARK: - Day Square View for Insights
+
+struct DaySquareViewInsights: View {
+    let day: DayData
+    let habit: Habit
+    let store: HabitStore
+    @State private var showingEditLog = false
+
+    var body: some View {
+        RoundedRectangle(cornerRadius: 2)
+            .fill(colorForIntensity(day.intensity))
+            .aspectRatio(1, contentMode: .fit)
+            .overlay(
+                RoundedRectangle(cornerRadius: 2)
+                    .stroke(day.isToday ? Color.blue : Color.clear, lineWidth: 1.5)
+            )
+            .onTapGesture {
+                if day.log != nil {
+                    showingEditLog = true
+                }
+            }
+            .sheet(isPresented: $showingEditLog) {
+                EditLogView(habit: habit, store: store, date: day.date, existingLog: day.log)
+            }
+    }
+
+    private func colorForIntensity(_ intensity: IntensityLevel) -> Color {
+        switch intensity {
+        case .none:
+            return Color(.systemGray5)
+        case .low:
+            return Color.green.opacity(0.3)
+        case .medium:
+            return Color.green.opacity(0.6)
+        case .high:
+            return Color.green
+        case .veryHigh:
+            return Color.green.opacity(1.0)
+        }
     }
 }
 

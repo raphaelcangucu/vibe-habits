@@ -16,6 +16,11 @@ struct MainTabView: View {
                     Label("Habits", systemImage: "checkmark.circle.fill")
                 }
 
+            FeedView()
+                .tabItem {
+                    Label("Feed", systemImage: "photo.stack.fill")
+                }
+
             SettingsView()
                 .tabItem {
                     Label("Settings", systemImage: "gear")

@@ -15,13 +15,17 @@ final class HabitLog {
     var date: Date
     var value: Double
     var completed: Bool
+    var note: String?
+    var photoData: Data?
 
-    init(habitId: UUID, date: Date, value: Double, completed: Bool = false) {
+    init(habitId: UUID, date: Date, value: Double, completed: Bool = false, note: String? = nil, photoData: Data? = nil) {
         self.id = UUID()
         self.habitId = habitId
         self.date = date
         self.value = value
         self.completed = completed
+        self.note = note
+        self.photoData = photoData
     }
 
     var dateKey: String {

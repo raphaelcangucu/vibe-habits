@@ -7,6 +7,7 @@
 
 import SwiftUI
 import SwiftData
+import PhotosUI
 
 struct ProgressLogView: View {
     @Environment(\.dismiss) private var dismiss
@@ -14,6 +15,12 @@ struct ProgressLogView: View {
     let store: HabitStore
 
     @State private var progressValue = ""
+    @State private var note = ""
+    @State private var selectedPhoto: PhotosPickerItem?
+    @State private var photoData: Data?
+    @State private var showingPhotoOptions = false
+    @State private var showingCamera = false
+    @FocusState private var isProgressFocused: Bool
 
     var body: some View {
         NavigationStack {
@@ -34,17 +41,132 @@ struct ProgressLogView: View {
                 .padding(.top, 40)
 
                 VStack(spacing: 16) {
-                    Text("Enter Progress")
-                        .font(.headline)
+                    VStack(spacing: 12) {
+                        Text("Enter Progress")
+                            .font(.headline)
 
-                    TextField("0", text: $progressValue)
+                        ZStack {
+                            // Large tappable background
+                            Color(.systemGray6)
+                                .frame(height: 100)
+                                .cornerRadius(12)
+                                .onTapGesture {
+                                    isProgressFocused = true
+                                }
+
+                            // Display text
+                            if progressValue.isEmpty {
+                                Text("Tap to enter")
+                                    .font(.system(size: 48, weight: .bold))
+                                    .foregroundColor(.secondary.opacity(0.5))
+                                    .allowsHitTesting(false)
+                            } else {
+                                Text(progressValue)
+                                    .font(.system(size: 48, weight: .bold))
+                                    .foregroundColor(.primary)
+                                    .allowsHitTesting(false)
+                            }
+                        }
+                        .frame(maxWidth: .infinity)
+                    }
+                    .padding(.bottom, 8)
+
+                    // Hidden TextField for actual input
+                    TextField("", text: $progressValue)
                         .keyboardType(.decimalPad)
-                        .font(.system(size: 48, weight: .bold))
-                        .multilineTextAlignment(.center)
-                        .padding()
-                        .background(Color(.systemGray6))
-                        .cornerRadius(12)
-                        .frame(maxWidth: 200)
+                        .focused($isProgressFocused)
+                        .frame(width: 0, height: 0)
+                        .opacity(0)
+
+                    ScrollView {
+                        VStack(spacing: 16) {
+
+                        // Photo Picker
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("Add Photo (Optional)")
+                                .font(.subheadline)
+                                .foregroundColor(.secondary)
+
+                            if let data = photoData, let uiImage = UIImage(data: data) {
+                                ZStack(alignment: .topTrailing) {
+                                    Image(uiImage: uiImage)
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fill)
+                                        .frame(height: 150)
+                                        .frame(maxWidth: .infinity)
+                                        .clipped()
+                                        .cornerRadius(12)
+
+                                    Button {
+                                        photoData = nil
+                                        selectedPhoto = nil
+                                    } label: {
+                                        Image(systemName: "xmark.circle.fill")
+                                            .font(.title2)
+                                            .foregroundColor(.white)
+                                            .background(Circle().fill(Color.black.opacity(0.5)))
+                                    }
+                                    .padding(8)
+                                }
+                            } else {
+                                HStack(spacing: 12) {
+                                    Button {
+                                        showingCamera = true
+                                    } label: {
+                                        VStack(spacing: 8) {
+                                            Image(systemName: "camera.fill")
+                                                .font(.title2)
+                                            Text("Camera")
+                                                .font(.caption)
+                                        }
+                                        .frame(maxWidth: .infinity)
+                                        .padding(.vertical, 30)
+                                        .background(Color(.systemGray6))
+                                        .foregroundColor(.primary)
+                                        .cornerRadius(12)
+                                    }
+
+                                    PhotosPicker(selection: $selectedPhoto, matching: .images) {
+                                        VStack(spacing: 8) {
+                                            Image(systemName: "photo.fill")
+                                                .font(.title2)
+                                            Text("Gallery")
+                                                .font(.caption)
+                                        }
+                                        .frame(maxWidth: .infinity)
+                                        .padding(.vertical, 30)
+                                        .background(Color(.systemGray6))
+                                        .foregroundColor(.primary)
+                                        .cornerRadius(12)
+                                    }
+                                }
+                            }
+                        }
+                        .sheet(isPresented: $showingCamera) {
+                            ImagePicker(photoData: $photoData, sourceType: .camera)
+                        }
+                        .onChange(of: selectedPhoto) { _, newValue in
+                            Task {
+                                if let data = try? await newValue?.loadTransferable(type: Data.self) {
+                                    photoData = data
+                                }
+                            }
+                        }
+
+                        // Note Field
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("Add Note (Optional)")
+                                .font(.subheadline)
+                                .foregroundColor(.secondary)
+
+                            TextField("How did it go?", text: $note, axis: .vertical)
+                                .textFieldStyle(.plain)
+                                .lineLimit(3...6)
+                                .padding()
+                                .background(Color(.systemGray6))
+                                .cornerRadius(12)
+                        }
+                    }
                 }
 
                 Spacer()
@@ -70,10 +192,17 @@ struct ProgressLogView: View {
                 }
                 .padding(.bottom, 20)
             }
+            }
             .padding(.horizontal, 24)
             .navigationBarTitleDisplayMode(.inline)
         }
         .presentationDetents([.medium])
+        .onAppear {
+            // Auto-focus the text field when view appears
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                isProgressFocused = true
+            }
+        }
     }
 
     private func formatValue(_ value: Double) -> String {
@@ -85,7 +214,8 @@ struct ProgressLogView: View {
 
     private func logProgress() {
         guard let value = Double(progressValue) else { return }
-        store.logProgress(for: habit, value: value)
+        let noteToSave = note.isEmpty ? nil : note
+        store.logProgress(for: habit, value: value, note: noteToSave, photoData: photoData)
         dismiss()
     }
 }

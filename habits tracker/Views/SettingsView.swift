@@ -113,6 +113,74 @@ struct SettingsView: View {
                 } header: {
                     Text("Tips")
                 }
+
+                // Talk to the Dev Section
+                Section {
+                    VStack(alignment: .leading, spacing: 16) {
+                        HStack {
+                            Image(systemName: "bubble.left.and.bubble.right.fill")
+                                .foregroundColor(.purple)
+                                .font(.title3)
+
+                            Text("Talk to the Dev")
+                                .font(.headline)
+                        }
+
+                        VStack(alignment: .leading, spacing: 12) {
+                            Text("Got ideas? Want a new feature?")
+                                .font(.subheadline)
+                                .foregroundColor(.secondary)
+
+                            VStack(alignment: .leading, spacing: 8) {
+                                HStack(alignment: .top, spacing: 8) {
+                                    Image(systemName: "1.circle.fill")
+                                        .foregroundColor(.blue)
+                                        .font(.body)
+
+                                    Text("Take a screenshot of your idea")
+                                        .font(.subheadline)
+                                        .foregroundColor(.secondary)
+                                }
+
+                                HStack(alignment: .top, spacing: 8) {
+                                    Image(systemName: "2.circle.fill")
+                                        .foregroundColor(.blue)
+                                        .font(.body)
+
+                                    Text("Post it on Twitter/X with your suggestions")
+                                        .font(.subheadline)
+                                        .foregroundColor(.secondary)
+                                }
+
+                                HStack(alignment: .top, spacing: 8) {
+                                    Image(systemName: "3.circle.fill")
+                                        .foregroundColor(.blue)
+                                        .font(.body)
+
+                                    Text("Tag me @raphaelcangucu and maybe I'll build it!")
+                                        .font(.subheadline)
+                                        .foregroundColor(.secondary)
+                                }
+                            }
+
+                            Divider()
+                                .padding(.vertical, 4)
+
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text("Feeling ambitious?")
+                                    .font(.subheadline)
+                                    .fontWeight(.medium)
+
+                                Text("Fork the project on GitHub and build it yourself! Open-source vibes ✨")
+                                    .font(.subheadline)
+                                    .foregroundColor(.secondary)
+                            }
+                        }
+                    }
+                    .padding(.vertical, 4)
+                } header: {
+                    Text("Feedback")
+                }
             }
             .navigationTitle("Settings")
         }

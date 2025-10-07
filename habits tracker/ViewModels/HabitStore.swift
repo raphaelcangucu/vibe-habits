@@ -49,9 +49,18 @@ class HabitStore {
         let logs = getLogs(for: habit)
         let existingLog = logs.first { calendar.isDate($0.date, inSameDayAs: startOfDay) }
 
+        // For times/hours per week, completed = true if value > 0
+        // For daily habits, completed = true if value >= target
+        let isCompleted: Bool
+        if habit.frequencyType == .timesPerWeek || habit.frequencyType == .hoursPerWeek {
+            isCompleted = value > 0
+        } else {
+            isCompleted = value >= habit.targetValue
+        }
+
         if let existingLog = existingLog {
             existingLog.value = value
-            existingLog.completed = value >= habit.targetValue
+            existingLog.completed = isCompleted
             if let note = note {
                 existingLog.note = note
             }
@@ -63,7 +72,7 @@ class HabitStore {
                 habitId: habit.id,
                 date: startOfDay,
                 value: value,
-                completed: value >= habit.targetValue,
+                completed: isCompleted,
                 note: note,
                 photoData: photoData
             )

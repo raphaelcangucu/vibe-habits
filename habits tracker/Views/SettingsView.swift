@@ -143,7 +143,7 @@ struct SettingsView: View {
                             Text("Version")
                                 .foregroundColor(.secondary)
                             Spacer()
-                            Text("1.0.0")
+                            Text(getAppVersion())
                                 .foregroundColor(.primary)
                         }
                         .font(.subheadline)
@@ -265,6 +265,16 @@ struct SettingsView: View {
             }
             .navigationTitle("Settings")
         }
+    }
+
+    private func getAppVersion() -> String {
+        // Get version from Info.plist
+        if let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String {
+            return version
+        }
+
+        // Fallback to hardcoded version
+        return "1.0.1"
     }
 }
 

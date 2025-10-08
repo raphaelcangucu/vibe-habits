@@ -91,8 +91,8 @@ struct FeedItemView: View {
                     Image(uiImage: uiImage)
                         .resizable()
                         .aspectRatio(contentMode: .fill)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 200)
+                        .frame(maxWidth: .infinity, alignment: .top)
+                        .frame(height: 200, alignment: .top)
                         .clipped()
                         .cornerRadius(12)
 

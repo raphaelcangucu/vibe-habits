@@ -191,6 +191,12 @@ class HabitStore {
     }
 
     func getLongestStreak(for habit: Habit) -> Int {
+        // For times/hours per week, calculate streak in weeks
+        if habit.frequencyType == .timesPerWeek || habit.frequencyType == .hoursPerWeek {
+            return getLongestWeekStreak(for: habit)
+        }
+
+        // For daily habits, calculate streak in days
         let logs = getLogs(for: habit).filter { $0.completed }.sorted { $0.date < $1.date }
         guard !logs.isEmpty else { return 0 }
 
@@ -204,6 +210,43 @@ class HabitStore {
 
             if let daysBetween = calendar.dateComponents([.day], from: previousDate, to: currentDate).day,
                daysBetween == 1 {
+                currentStreak += 1
+                maxStreak = max(maxStreak, currentStreak)
+            } else {
+                currentStreak = 1
+            }
+        }
+
+        return maxStreak
+    }
+
+    func getLongestWeekStreak(for habit: Habit) -> Int {
+        let logs = getLogs(for: habit).filter { $0.completed }
+        guard !logs.isEmpty else { return 0 }
+
+        let calendar = Calendar.current
+
+        // Group logs by week
+        var weeklyCompletion: Set<Date> = []
+        for log in logs {
+            if let weekStart = calendar.dateInterval(of: .weekOfYear, for: log.date)?.start {
+                weeklyCompletion.insert(weekStart)
+            }
+        }
+
+        // Sort weeks and calculate streak
+        let sortedWeeks = Array(weeklyCompletion).sorted()
+        guard !sortedWeeks.isEmpty else { return 0 }
+
+        var maxStreak = 1
+        var currentStreak = 1
+
+        for i in 1..<sortedWeeks.count {
+            let previousWeek = sortedWeeks[i - 1]
+            let currentWeek = sortedWeeks[i]
+
+            if let weeksBetween = calendar.dateComponents([.weekOfYear], from: previousWeek, to: currentWeek).weekOfYear,
+               weeksBetween == 1 {
                 currentStreak += 1
                 maxStreak = max(maxStreak, currentStreak)
             } else {

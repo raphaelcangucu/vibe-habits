@@ -27,42 +27,102 @@ class NotificationManager {
         }
     }
 
-    func scheduleDailyReminder() async {
-        // Cancel existing notifications first
-        cancelNotifications()
-
-        // Create notification content
+    func scheduleMorningReminder() async {
         let content = UNMutableNotificationContent()
-        content.title = "Habit Check-in"
-        content.body = "Did you complete your habits today?"
+        content.title = "Good Morning! 🌅"
+        content.body = "Start your day strong! Your habits are waiting for you."
         content.sound = .default
 
-        // Create date components for 9 PM
         var dateComponents = DateComponents()
-        dateComponents.hour = 21  // 9 PM
+        dateComponents.hour = 8  // 8 AM
         dateComponents.minute = 0
 
-        // Create trigger
         let trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: true)
-
-        // Create request
         let request = UNNotificationRequest(
-            identifier: "dailyHabitReminder",
+            identifier: "morningHabitReminder",
             content: content,
             trigger: trigger
         )
 
-        // Schedule notification
         do {
             try await UNUserNotificationCenter.current().add(request)
-            print("Daily reminder scheduled for 9 PM")
+            print("Morning reminder scheduled for 8 AM")
         } catch {
-            print("Error scheduling notification: \(error)")
+            print("Error scheduling morning notification: \(error)")
         }
     }
 
-    func cancelNotifications() {
-        UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: ["dailyHabitReminder"])
-        print("Notifications cancelled")
+    func scheduleAfternoonReminder() async {
+        let content = UNMutableNotificationContent()
+        content.title = "Midday Check-in ☀️"
+        content.body = "How's your progress today? Keep the momentum going!"
+        content.sound = .default
+
+        var dateComponents = DateComponents()
+        dateComponents.hour = 14  // 2 PM
+        dateComponents.minute = 0
+
+        let trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: true)
+        let request = UNNotificationRequest(
+            identifier: "afternoonHabitReminder",
+            content: content,
+            trigger: trigger
+        )
+
+        do {
+            try await UNUserNotificationCenter.current().add(request)
+            print("Afternoon reminder scheduled for 2 PM")
+        } catch {
+            print("Error scheduling afternoon notification: \(error)")
+        }
+    }
+
+    func scheduleEveningReminder() async {
+        let content = UNMutableNotificationContent()
+        content.title = "Evening Reflection 🌙"
+        content.body = "Time to log your progress! Did you complete your habits today?"
+        content.sound = .default
+
+        var dateComponents = DateComponents()
+        dateComponents.hour = 21  // 9 PM
+        dateComponents.minute = 0
+
+        let trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: true)
+        let request = UNNotificationRequest(
+            identifier: "eveningHabitReminder",
+            content: content,
+            trigger: trigger
+        )
+
+        do {
+            try await UNUserNotificationCenter.current().add(request)
+            print("Evening reminder scheduled for 9 PM")
+        } catch {
+            print("Error scheduling evening notification: \(error)")
+        }
+    }
+
+    func cancelMorningReminder() {
+        UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: ["morningHabitReminder"])
+        print("Morning reminder cancelled")
+    }
+
+    func cancelAfternoonReminder() {
+        UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: ["afternoonHabitReminder"])
+        print("Afternoon reminder cancelled")
+    }
+
+    func cancelEveningReminder() {
+        UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: ["eveningHabitReminder"])
+        print("Evening reminder cancelled")
+    }
+
+    func cancelAllNotifications() {
+        UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [
+            "morningHabitReminder",
+            "afternoonHabitReminder",
+            "eveningHabitReminder"
+        ])
+        print("All notifications cancelled")
     }
 }

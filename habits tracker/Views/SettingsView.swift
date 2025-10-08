@@ -8,7 +8,9 @@
 import SwiftUI
 
 struct SettingsView: View {
-    @AppStorage("notificationsEnabled") private var notificationsEnabled = false
+    @AppStorage("morningReminderEnabled") private var morningReminderEnabled = false
+    @AppStorage("afternoonReminderEnabled") private var afternoonReminderEnabled = false
+    @AppStorage("eveningReminderEnabled") private var eveningReminderEnabled = false
     @State private var notificationManager = NotificationManager.shared
 
     var body: some View {
@@ -16,39 +18,108 @@ struct SettingsView: View {
             List {
                 // Notifications Section
                 Section {
+                    // Morning Reminder
                     VStack(alignment: .leading, spacing: 12) {
                         HStack {
-                            Image(systemName: "bell.fill")
-                                .foregroundColor(.blue)
+                            Image(systemName: "sunrise.fill")
+                                .foregroundColor(.orange)
                                 .font(.title3)
 
                             VStack(alignment: .leading, spacing: 4) {
-                                Text("Daily Reminders")
+                                Text("Morning Reminder")
                                     .font(.headline)
 
-                                Text("Get notified at 9 PM to check in on your habits")
+                                Text("8:00 AM - Start your day strong")
                                     .font(.caption)
                                     .foregroundColor(.secondary)
                             }
 
                             Spacer()
 
-                            Toggle("", isOn: $notificationsEnabled)
+                            Toggle("", isOn: $morningReminderEnabled)
+                                .labelsHidden()
+                        }
+                    }
+                    .padding(.vertical, 4)
+
+                    // Afternoon Reminder
+                    VStack(alignment: .leading, spacing: 12) {
+                        HStack {
+                            Image(systemName: "sun.max.fill")
+                                .foregroundColor(.yellow)
+                                .font(.title3)
+
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("Midday Check-in")
+                                    .font(.headline)
+
+                                Text("2:00 PM - Keep the momentum going")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+
+                            Spacer()
+
+                            Toggle("", isOn: $afternoonReminderEnabled)
+                                .labelsHidden()
+                        }
+                    }
+                    .padding(.vertical, 4)
+
+                    // Evening Reminder
+                    VStack(alignment: .leading, spacing: 12) {
+                        HStack {
+                            Image(systemName: "moon.stars.fill")
+                                .foregroundColor(.indigo)
+                                .font(.title3)
+
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("Evening Reflection")
+                                    .font(.headline)
+
+                                Text("9:00 PM - Log your daily progress")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+
+                            Spacer()
+
+                            Toggle("", isOn: $eveningReminderEnabled)
                                 .labelsHidden()
                         }
                     }
                     .padding(.vertical, 4)
                 } header: {
-                    Text("Notifications")
+                    Text("Daily Reminders")
                 }
-                .onChange(of: notificationsEnabled) { _, newValue in
+                .onChange(of: morningReminderEnabled) { _, newValue in
                     if newValue {
                         Task {
                             await notificationManager.requestAuthorization()
-                            await notificationManager.scheduleDailyReminder()
+                            await notificationManager.scheduleMorningReminder()
                         }
                     } else {
-                        notificationManager.cancelNotifications()
+                        notificationManager.cancelMorningReminder()
+                    }
+                }
+                .onChange(of: afternoonReminderEnabled) { _, newValue in
+                    if newValue {
+                        Task {
+                            await notificationManager.requestAuthorization()
+                            await notificationManager.scheduleAfternoonReminder()
+                        }
+                    } else {
+                        notificationManager.cancelAfternoonReminder()
+                    }
+                }
+                .onChange(of: eveningReminderEnabled) { _, newValue in
+                    if newValue {
+                        Task {
+                            await notificationManager.requestAuthorization()
+                            await notificationManager.scheduleEveningReminder()
+                        }
+                    } else {
+                        notificationManager.cancelEveningReminder()
                     }
                 }
 

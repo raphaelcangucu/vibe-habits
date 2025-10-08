@@ -140,7 +140,10 @@ struct HabitCardView: View {
             HStack(spacing: 16) {
                 StatItem(label: "This Week", value: formatValue(store.getWeekValue(for: habit)))
                 StatItem(label: "Total Days", value: "\(store.getTotalDays(for: habit))")
-                StatItem(label: "Best Streak", value: "\(store.getLongestStreak(for: habit))")
+
+                let streakValue = store.getLongestStreak(for: habit)
+                let streakLabel = (habit.frequencyType == .timesPerWeek || habit.frequencyType == .hoursPerWeek) ? "\(streakValue) wks" : "\(streakValue)"
+                StatItem(label: "Best Streak", value: streakLabel)
             }
             .font(.caption)
         }

@@ -38,4 +38,44 @@ final class habits_trackerUITests: XCTestCase {
             XCUIApplication().launch()
         }
     }
+
+    @MainActor
+    func testStoreScreenshots() throws {
+        let app = XCUIApplication()
+        app.launchArguments += [
+            "-StoreScreenshotMode",
+            "-AppleLanguages", "(en)",
+            "-AppleLocale", "en_US"
+        ]
+        app.launch()
+
+        XCTAssertTrue(app.navigationBars["Vibe Habits"].waitForExistence(timeout: 8))
+        sleep(3)
+        captureStoreScreenshot(named: "01-habits")
+
+        let insightsButton = app.buttons["Insights"].firstMatch
+        XCTAssertTrue(insightsButton.waitForExistence(timeout: 3))
+        insightsButton.tap()
+        XCTAssertTrue(app.staticTexts["Insights"].waitForExistence(timeout: 3))
+        captureStoreScreenshot(named: "02-insights")
+
+        app.terminate()
+        app.launch()
+        XCTAssertTrue(app.navigationBars["Vibe Habits"].waitForExistence(timeout: 8))
+        sleep(3)
+        let feedTab = app.tabBars.buttons["Feed"].exists
+            ? app.tabBars.buttons["Feed"]
+            : app.buttons["Feed"].firstMatch
+        XCTAssertTrue(feedTab.waitForExistence(timeout: 3))
+        feedTab.tap()
+        XCTAssertTrue(app.navigationBars["Feed"].waitForExistence(timeout: 3))
+        captureStoreScreenshot(named: "03-feed")
+    }
+
+    private func captureStoreScreenshot(named name: String) {
+        let attachment = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
+        attachment.name = name
+        attachment.lifetime = .keepAlways
+        add(attachment)
+    }
 }

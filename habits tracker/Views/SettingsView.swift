@@ -158,7 +158,7 @@ struct SettingsView: View {
                         Label("Privacy Policy", systemImage: "hand.raised.fill")
                     }
 
-                    Link(destination: URL(string: "https://github.com/raphaelcangucu/vibe-habits/issues")!) {
+                    Link(destination: URL(string: "https://github.com/raphaelcangucu/vibe-habits/blob/main/SUPPORT.md")!) {
                         Label("Support", systemImage: "questionmark.circle.fill")
                     }
                 }

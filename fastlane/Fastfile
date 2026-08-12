@@ -87,6 +87,25 @@ platform :ios do
     sync_app_store_signing(api_key: app_store_connect_key)
   end
 
+  desc "Upload the reviewed App Store listing and screenshots without a binary"
+  lane :store_listing do
+    upload_to_app_store(
+      api_key: app_store_connect_key,
+      app_version: ENV.fetch("APP_STORE_VERSION", "1.0.6"),
+      metadata_path: "fastlane/metadata",
+      screenshots_path: "fastlane/screenshots",
+      skip_binary_upload: true,
+      skip_metadata: ENV["SKIP_STORE_METADATA"] == "true",
+      skip_app_version_update: false,
+      overwrite_screenshots: false,
+      sync_screenshots: true,
+      submit_for_review: false,
+      automatic_release: false,
+      force: true,
+      run_precheck_before_submit: false
+    )
+  end
+
   desc "Test, archive, sign, and upload a tagged build to App Store Connect/TestFlight"
   lane :release do
     version = release_version_from_tag

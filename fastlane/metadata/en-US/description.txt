@@ -1,0 +1,15 @@
+Build consistency one day at a time with Vibe Habits, a private and focused habit tracker for iPhone and iPad.
+
+Create habits that match the way you work:
+• Set daily targets
+• Track goals by times per week
+• Track hours per week
+
+Stay motivated with:
+• Clear weekly progress
+• Visual streaks and completion history
+• Useful insights for weekly, monthly, and yearly periods
+• Optional notes and photos for meaningful moments
+• Gentle morning, midday, and evening reminders
+
+Your habits belong to you. Vibe Habits works without an account, stores your information on your device, and includes no advertising, analytics, or tracking SDKs.

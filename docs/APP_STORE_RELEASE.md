@@ -13,8 +13,9 @@ O projeto está configurado com:
 - Bundle ID: `app.vibehabits.ios`
 - App Store Connect ID: `6800547603`
 - Apple Developer Team ID: `SB6QYUH97U`
-- Categoria: Lifestyle
-- Versão derivada da tag, por exemplo `v1.0.2` vira `1.0.2`
+- Categoria principal: Productivity
+- Categoria secundária: Health & Fitness
+- Versão derivada da tag, por exemplo `v1.0.6` vira `1.0.6`
 - Build derivado de `GITHUB_RUN_NUMBER.GITHUB_RUN_ATTEMPT`
 
 ## 2. Preparação única na Apple
@@ -68,8 +69,8 @@ Esses secrets já estão configurados no repositório `raphaelcangucu/vibe-habit
 Faça o merge das mudanças desejadas e crie uma nova tag anotada:
 
 ```sh
-git tag -a v1.0.2 -m 'Vibe Habits 1.0.2'
-git push origin v1.0.2
+git tag -a v1.0.6 -m 'Vibe Habits 1.0.6'
+git push origin v1.0.6
 ```
 
 O workflow `.github/workflows/ios-release.yml` irá:
@@ -91,7 +92,7 @@ Antes de enviar à análise, complete no App Store Connect:
 - App Privacy: para o código atual, selecione que o app não coleta dados, pois hábitos e fotos permanecem no dispositivo e não há analytics, anúncios ou tracking;
 - questionário atualizado de classificação etária;
 - disponibilidade, preço (gratuito, se essa for a escolha) e status de comerciante para distribuição na União Europeia;
-- de 1 a 10 screenshots sem transparência. Como o app suporta iPhone e iPad, envie os conjuntos obrigatórios exibidos pelo App Store Connect para ambos;
+- de 1 a 10 screenshots sem transparência. Os conjuntos versionados em `fastlane/screenshots/en-US` cobrem iPhone 6,9 polegadas e iPad 13 polegadas;
 - informações de revisão: o app não exige login, funciona offline, câmera/fotos são opcionais e as notificações são locais;
 - selecione o build processado pelo TestFlight e escolha liberação manual, automática ou gradual.
 
@@ -116,5 +117,5 @@ Um release local requer todas as variáveis de `.env` e uma tag informada por `R
 Para validar localmente testes, assinatura, archive e exportação sem enviar o build:
 
 ```sh
-RELEASE_TAG=v1.0.5 SKIP_UPLOAD=true bundle exec fastlane ios release
+RELEASE_TAG=v1.0.6 SKIP_UPLOAD=true bundle exec fastlane ios release
 ```

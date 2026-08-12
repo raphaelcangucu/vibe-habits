@@ -26,7 +26,7 @@ If the app's data practices change, this policy and the App Store privacy detail
 
 ## Contact
 
-For privacy questions, contact [@raphaelcangucu](https://twitter.com/raphaelcangucu) or open an issue in the [Vibe Habits repository](https://github.com/raphaelcangucu/vibe-habits/issues).
+For privacy questions, email [me@raphaelcangucu.com](mailto:me@raphaelcangucu.com) or open an issue in the [Vibe Habits repository](https://github.com/raphaelcangucu/vibe-habits/issues).
 
 ---
 
@@ -58,4 +58,4 @@ Se as práticas de dados do app mudarem, esta política e as informações de pr
 
 ## Contato
 
-Para dúvidas sobre privacidade, fale com [@raphaelcangucu](https://twitter.com/raphaelcangucu) ou abra uma issue no [repositório do Vibe Habits](https://github.com/raphaelcangucu/vibe-habits/issues).
+Para dúvidas sobre privacidade, envie um e-mail para [me@raphaelcangucu.com](mailto:me@raphaelcangucu.com) ou abra uma issue no [repositório do Vibe Habits](https://github.com/raphaelcangucu/vibe-habits/issues).

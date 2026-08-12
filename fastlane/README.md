@@ -39,6 +39,14 @@ Run the UI test suite separately
 
 Create the initial App Store certificate and provisioning profile
 
+### ios store_listing
+
+```sh
+[bundle exec] fastlane ios store_listing
+```
+
+Upload the reviewed App Store listing and screenshots without a binary
+
 ### ios release
 
 ```sh

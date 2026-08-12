@@ -65,6 +65,7 @@ platform :ios do
 
   private_lane :sync_app_store_signing do |options|
     ensure_env_vars(env_vars: %w[MATCH_GIT_URL MATCH_PASSWORD])
+    readonly_signing = is_ci || ENV["SKIP_UPLOAD"] == "true"
     setup_ci if is_ci
 
     match_options = {
@@ -74,7 +75,7 @@ platform :ios do
       git_url: ENV.fetch("MATCH_GIT_URL"),
       git_branch: ENV.fetch("MATCH_GIT_BRANCH", "main"),
       api_key: options.fetch(:api_key),
-      readonly: is_ci
+      readonly: readonly_signing
     }
     match_options[:git_private_key] = ENV["MATCH_GIT_PRIVATE_KEY"] unless ENV["MATCH_GIT_PRIVATE_KEY"].to_s.empty?
 
@@ -117,11 +118,15 @@ platform :ios do
       }
     )
 
-    upload_to_testflight(
-      api_key: api_key,
-      skip_waiting_for_build_processing: true
-    )
+    if ENV["SKIP_UPLOAD"] == "true"
+      UI.success("Vibe Habits #{version} (#{build_number}) passed local release validation; upload was skipped")
+    else
+      upload_to_testflight(
+        api_key: api_key,
+        skip_waiting_for_build_processing: true
+      )
 
-    UI.success("Vibe Habits #{version} (#{build_number}) was uploaded to App Store Connect")
+      UI.success("Vibe Habits #{version} (#{build_number}) was uploaded to App Store Connect")
+    end
   end
 end

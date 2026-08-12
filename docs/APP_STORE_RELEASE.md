@@ -112,3 +112,9 @@ bundle exec fastlane ios ui_tests
 ```
 
 Um release local requer todas as variáveis de `.env` e uma tag informada por `RELEASE_TAG`.
+
+Para validar localmente testes, assinatura, archive e exportação sem enviar o build:
+
+```sh
+RELEASE_TAG=v1.0.5 SKIP_UPLOAD=true bundle exec fastlane ios release
+```

@@ -412,35 +412,111 @@ class HabitStore {
         return weeks
     }
 
+    // MARK: - Weekly Statistics for Times/Hours Per Week Habits
+
+    func getWeeklyStats(for habit: Habit, period: TimePeriod) -> [WeeklyStatistic] {
+        let calendar = Calendar.current
+        let today = Date()
+        var stats: [WeeklyStatistic] = []
+
+        let weeksToShow: Int
+        switch period {
+        case .week:
+            weeksToShow = 1
+        case .month:
+            weeksToShow = 4
+        case .year:
+            weeksToShow = 52
+        }
+
+        // Get current week start
+        guard let currentWeekStart = calendar.dateInterval(of: .weekOfYear, for: today)?.start else {
+            return []
+        }
+
+        for weekOffset in (0..<weeksToShow).reversed() {
+            guard let weekStart = calendar.date(byAdding: .weekOfYear, value: -weekOffset, to: currentWeekStart) else {
+                continue
+            }
+            guard let weekEnd = calendar.date(byAdding: .day, value: 6, to: weekStart) else {
+                continue
+            }
+
+            // Get logs for this week
+            let logs = getLogs(for: habit).filter { log in
+                log.date >= weekStart && log.date <= calendar.startOfDay(for: weekEnd)
+            }
+
+            let totalValue = logs.reduce(0) { $0 + $1.value }
+            let isComplete = totalValue >= habit.targetValue
+
+            // Format week label
+            let weekLabel: String
+            if weekOffset == 0 {
+                weekLabel = "This Week"
+            } else if weekOffset == 1 {
+                weekLabel = "Last Week"
+            } else {
+                weekLabel = "Week of \(formatShortDate(weekStart))"
+            }
+
+            // Format date range
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "MMM d"
+            let startString = dateFormatter.string(from: weekStart)
+            let endString = dateFormatter.string(from: weekEnd)
+            let dateRange = "\(startString) - \(endString)"
+
+            // Format completion text
+            let completionText = isComplete ? "Complete" : "\(Int((totalValue / habit.targetValue) * 100))% complete"
+
+            stats.append(WeeklyStatistic(
+                weekLabel: weekLabel,
+                dateRange: dateRange,
+                totalValue: totalValue,
+                targetValue: habit.targetValue,
+                isComplete: isComplete,
+                completionText: completionText
+            ))
+        }
+
+        return stats
+    }
+
+    private func formatShortDate(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MMM d"
+        return formatter.string(from: date)
+    }
+
     // MARK: - Period Statistics
 
     func getStatisticsForPeriod(for habit: Habit, period: TimePeriod) -> PeriodStatistics {
         let calendar = Calendar.current
         let today = calendar.startOfDay(for: Date())
 
-        let startDate: Date
-        switch period {
-        case .week:
-            startDate = calendar.date(byAdding: .day, value: -7, to: today)!
-        case .month:
-            startDate = calendar.date(byAdding: .day, value: -30, to: today)!
-        case .year:
-            startDate = calendar.date(byAdding: .day, value: -365, to: today)!
+        // For times/hours per week habits, calculate statistics based on weeks
+        if habit.frequencyType == .timesPerWeek || habit.frequencyType == .hoursPerWeek {
+            return getWeekBasedStatistics(for: habit, period: period)
         }
+
+        // For daily habits with month period, use actual month boundaries
+        if period == .month {
+            return getDailyMonthStatistics(for: habit)
+        }
+
+        // For daily habits with week period, use current week boundaries
+        if period == .week {
+            return getDailyWeekStatistics(for: habit)
+        }
+
+        // For daily habits with year, use last 365 days
+        let startDate = calendar.date(byAdding: .day, value: -365, to: today)!
+        let daysInPeriod = 365
 
         let logs = getLogs(for: habit).filter { $0.date >= startDate }
         let completedDays = logs.filter { $0.completed }.count
         let totalValue = logs.reduce(0) { $0 + $1.value }
-
-        let daysInPeriod: Int
-        switch period {
-        case .week:
-            daysInPeriod = 7
-        case .month:
-            daysInPeriod = 30
-        case .year:
-            daysInPeriod = 365
-        }
 
         let completionRate = Double(completedDays) / Double(daysInPeriod)
 
@@ -450,6 +526,313 @@ class HabitStore {
             completionRate: completionRate,
             longestStreak: getLongestStreakInPeriod(for: habit, startDate: startDate)
         )
+    }
+
+    private func getDailyWeekStatistics(for habit: Habit) -> PeriodStatistics {
+        let calendar = Calendar.current
+        let today = Date()
+
+        // Get the current week boundaries (Sunday to Saturday)
+        guard let weekInterval = calendar.dateInterval(of: .weekOfYear, for: today) else {
+            return PeriodStatistics(completedDays: 0, totalValue: 0, completionRate: 0, longestStreak: 0)
+        }
+
+        let weekStart = weekInterval.start
+        let weekEnd = weekInterval.end
+
+        // Get logs within the current week
+        let logs = getLogs(for: habit).filter { log in
+            log.date >= weekStart && log.date < weekEnd
+        }
+
+        let completedDays = logs.filter { $0.completed }.count
+        let totalValue = logs.reduce(0) { $0 + $1.value }
+
+        let daysInWeek = 7
+        let completionRate = Double(completedDays) / Double(daysInWeek)
+
+        // Get longest streak within this week
+        let longestStreak = getLongestStreakInDateRange(for: habit, startDate: weekStart, endDate: weekEnd)
+
+        return PeriodStatistics(
+            completedDays: completedDays,
+            totalValue: totalValue,
+            completionRate: completionRate,
+            longestStreak: longestStreak
+        )
+    }
+
+    private func getDailyMonthStatistics(for habit: Habit) -> PeriodStatistics {
+        let calendar = Calendar.current
+        let today = Date()
+
+        // Get the first and last day of the current month
+        guard let monthInterval = calendar.dateInterval(of: .month, for: today) else {
+            return PeriodStatistics(completedDays: 0, totalValue: 0, completionRate: 0, longestStreak: 0)
+        }
+
+        let monthStart = monthInterval.start
+        let monthEnd = monthInterval.end
+
+        // Get logs within the current month
+        let logs = getLogs(for: habit).filter { log in
+            log.date >= monthStart && log.date < monthEnd
+        }
+
+        let completedDays = logs.filter { $0.completed }.count
+        let totalValue = logs.reduce(0) { $0 + $1.value }
+
+        // Calculate number of days in this month
+        let daysInMonth = calendar.dateComponents([.day], from: monthStart, to: monthEnd).day ?? 30
+
+        let completionRate = Double(completedDays) / Double(daysInMonth)
+
+        // Get longest streak within this month
+        let longestStreak = getLongestStreakInDateRange(for: habit, startDate: monthStart, endDate: monthEnd)
+
+        return PeriodStatistics(
+            completedDays: completedDays,
+            totalValue: totalValue,
+            completionRate: completionRate,
+            longestStreak: longestStreak
+        )
+    }
+
+    private func getLongestStreakInDateRange(for habit: Habit, startDate: Date, endDate: Date) -> Int {
+        let logs = getLogs(for: habit)
+            .filter { $0.completed && $0.date >= startDate && $0.date < endDate }
+            .sorted { $0.date < $1.date }
+
+        guard !logs.isEmpty else { return 0 }
+
+        let calendar = Calendar.current
+        var maxStreak = 1
+        var currentStreak = 1
+
+        for i in 1..<logs.count {
+            let previousDate = logs[i - 1].date
+            let currentDate = logs[i].date
+
+            if let daysBetween = calendar.dateComponents([.day], from: previousDate, to: currentDate).day,
+               daysBetween == 1 {
+                currentStreak += 1
+                maxStreak = max(maxStreak, currentStreak)
+            } else {
+                currentStreak = 1
+            }
+        }
+
+        return maxStreak
+    }
+
+    private func getWeekBasedStatistics(for habit: Habit, period: TimePeriod) -> PeriodStatistics {
+        let calendar = Calendar.current
+        let today = Date()
+
+        // For month, get weeks within the current month
+        if period == .month {
+            return getMonthWeekBasedStatistics(for: habit)
+        }
+
+        // For week and year, use the simple offset approach
+        let weeksToShow: Int
+        switch period {
+        case .week:
+            weeksToShow = 1
+        case .month:
+            weeksToShow = 4  // This won't be reached due to the check above
+        case .year:
+            weeksToShow = 52
+        }
+
+        // Get current week start
+        guard let currentWeekStart = calendar.dateInterval(of: .weekOfYear, for: today)?.start else {
+            return PeriodStatistics(completedDays: 0, totalValue: 0, completionRate: 0, longestStreak: 0)
+        }
+
+        var completedWeeks = 0
+        var totalValue: Double = 0
+
+        // Calculate for each week in the period
+        for weekOffset in (0..<weeksToShow).reversed() {
+            guard let weekStart = calendar.date(byAdding: .weekOfYear, value: -weekOffset, to: currentWeekStart),
+                  let weekEnd = calendar.date(byAdding: .day, value: 6, to: weekStart) else {
+                continue
+            }
+
+            // Get logs for this week
+            let logs = getLogs(for: habit).filter { log in
+                log.date >= weekStart && log.date <= calendar.startOfDay(for: weekEnd)
+            }
+
+            let weekTotal = logs.reduce(0) { $0 + $1.value }
+            totalValue += weekTotal
+
+            // A week is "completed" if it meets the target
+            if weekTotal >= habit.targetValue {
+                completedWeeks += 1
+            }
+        }
+
+        let completionRate = Double(completedWeeks) / Double(weeksToShow)
+
+        // Get longest week streak for the period
+        let longestStreak = getLongestWeekStreakInPeriod(for: habit, weeksToShow: weeksToShow)
+
+        return PeriodStatistics(
+            completedDays: completedWeeks,
+            totalValue: totalValue,
+            completionRate: completionRate,
+            longestStreak: longestStreak
+        )
+    }
+
+    private func getMonthWeekBasedStatistics(for habit: Habit) -> PeriodStatistics {
+        let calendar = Calendar.current
+        let today = Date()
+
+        // Get the first and last day of the current month
+        guard let monthInterval = calendar.dateInterval(of: .month, for: today) else {
+            return PeriodStatistics(completedDays: 0, totalValue: 0, completionRate: 0, longestStreak: 0)
+        }
+
+        let monthStart = monthInterval.start
+        let monthEnd = monthInterval.end
+
+        // Get all weeks that overlap with this month
+        var weekStarts: [Date] = []
+        var currentDate = monthStart
+
+        // Find the first Sunday of or before the month start
+        if let firstWeekStart = calendar.dateInterval(of: .weekOfYear, for: monthStart)?.start {
+            currentDate = firstWeekStart
+        }
+
+        // Collect all week starts that overlap with the month
+        while currentDate < monthEnd {
+            weekStarts.append(currentDate)
+            guard let nextWeek = calendar.date(byAdding: .weekOfYear, value: 1, to: currentDate) else {
+                break
+            }
+            currentDate = nextWeek
+        }
+
+        var completedWeeks = 0
+        var totalValue: Double = 0
+
+        // Calculate statistics for each week
+        for weekStart in weekStarts {
+            guard let weekEnd = calendar.date(byAdding: .day, value: 6, to: weekStart) else {
+                continue
+            }
+
+            // Get logs for this week that are also within the month
+            let logs = getLogs(for: habit).filter { log in
+                log.date >= max(weekStart, monthStart) &&
+                log.date < min(calendar.date(byAdding: .day, value: 1, to: weekEnd)!, monthEnd) &&
+                log.date >= monthStart && log.date < monthEnd
+            }
+
+            let weekTotal = logs.reduce(0) { $0 + $1.value }
+            totalValue += weekTotal
+
+            // A week is "completed" if it meets the target
+            if weekTotal >= habit.targetValue {
+                completedWeeks += 1
+            }
+        }
+
+        let weeksCount = weekStarts.count
+        let completionRate = weeksCount > 0 ? Double(completedWeeks) / Double(weeksCount) : 0
+
+        // Get longest week streak within this month
+        let longestStreak = getLongestWeekStreakInMonth(for: habit, weekStarts: weekStarts, monthStart: monthStart, monthEnd: monthEnd)
+
+        return PeriodStatistics(
+            completedDays: completedWeeks,
+            totalValue: totalValue,
+            completionRate: completionRate,
+            longestStreak: longestStreak
+        )
+    }
+
+    private func getLongestWeekStreakInMonth(for habit: Habit, weekStarts: [Date], monthStart: Date, monthEnd: Date) -> Int {
+        let calendar = Calendar.current
+        var weekCompletions: [Bool] = []
+
+        for weekStart in weekStarts {
+            guard let weekEnd = calendar.date(byAdding: .day, value: 6, to: weekStart) else {
+                continue
+            }
+
+            let logs = getLogs(for: habit).filter { log in
+                log.date >= max(weekStart, monthStart) &&
+                log.date < min(calendar.date(byAdding: .day, value: 1, to: weekEnd)!, monthEnd) &&
+                log.date >= monthStart && log.date < monthEnd
+            }
+
+            let weekTotal = logs.reduce(0) { $0 + $1.value }
+            weekCompletions.append(weekTotal >= habit.targetValue)
+        }
+
+        guard !weekCompletions.isEmpty else { return 0 }
+
+        var maxStreak = 0
+        var currentStreak = 0
+
+        for completed in weekCompletions {
+            if completed {
+                currentStreak += 1
+                maxStreak = max(maxStreak, currentStreak)
+            } else {
+                currentStreak = 0
+            }
+        }
+
+        return maxStreak
+    }
+
+    private func getLongestWeekStreakInPeriod(for habit: Habit, weeksToShow: Int) -> Int {
+        let calendar = Calendar.current
+        let today = Date()
+
+        guard let currentWeekStart = calendar.dateInterval(of: .weekOfYear, for: today)?.start else {
+            return 0
+        }
+
+        var weekCompletions: [Bool] = []
+
+        // Check each week in the period
+        for weekOffset in (0..<weeksToShow).reversed() {
+            guard let weekStart = calendar.date(byAdding: .weekOfYear, value: -weekOffset, to: currentWeekStart),
+                  let weekEnd = calendar.date(byAdding: .day, value: 6, to: weekStart) else {
+                continue
+            }
+
+            let logs = getLogs(for: habit).filter { log in
+                log.date >= weekStart && log.date <= calendar.startOfDay(for: weekEnd)
+            }
+
+            let weekTotal = logs.reduce(0) { $0 + $1.value }
+            weekCompletions.append(weekTotal >= habit.targetValue)
+        }
+
+        // Calculate longest streak of consecutive true values
+        guard !weekCompletions.isEmpty else { return 0 }
+
+        var maxStreak = 0
+        var currentStreak = 0
+
+        for completed in weekCompletions {
+            if completed {
+                currentStreak += 1
+                maxStreak = max(maxStreak, currentStreak)
+            } else {
+                currentStreak = 0
+            }
+        }
+
+        return maxStreak
     }
 
     private func getLongestStreakInPeriod(for habit: Habit, startDate: Date) -> Int {
@@ -562,4 +945,14 @@ enum IntensityLevel {
     case medium
     case high
     case veryHigh
+}
+
+struct WeeklyStatistic: Identifiable {
+    let id = UUID()
+    let weekLabel: String
+    let dateRange: String
+    let totalValue: Double
+    let targetValue: Double
+    let isComplete: Bool
+    let completionText: String
 }

@@ -153,6 +153,16 @@ struct SettingsView: View {
                     Text("About")
                 }
 
+                Section("Privacy & Support") {
+                    Link(destination: URL(string: "https://github.com/raphaelcangucu/vibe-habits/blob/main/PRIVACY.md")!) {
+                        Label("Privacy Policy", systemImage: "hand.raised.fill")
+                    }
+
+                    Link(destination: URL(string: "https://github.com/raphaelcangucu/vibe-habits/issues")!) {
+                        Label("Support", systemImage: "questionmark.circle.fill")
+                    }
+                }
+
                 // Tips Section
                 Section {
                     VStack(alignment: .leading, spacing: 16) {

@@ -1,0 +1,68 @@
+name: iOS release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ios-release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: Test and upload to App Store Connect
+    runs-on: macos-15
+    timeout-minutes: 60
+    env:
+      APP_IDENTIFIER: app.vibehabits.ios
+      APPLE_TEAM_ID: SB6QYUH97U
+      APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+      APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+      APP_STORE_CONNECT_KEY_CONTENT_BASE64: ${{ secrets.APP_STORE_CONNECT_KEY_CONTENT_BASE64 }}
+      MATCH_GIT_URL: ${{ secrets.MATCH_GIT_URL }}
+      MATCH_GIT_BRANCH: main
+      MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+
+    steps:
+      - name: Check out the tagged source
+        uses: actions/checkout@v4
+
+      - name: Set up Ruby and Fastlane
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+
+      - name: Configure read-only Match access
+        env:
+          MATCH_GIT_PRIVATE_KEY_BASE64: ${{ secrets.MATCH_GIT_PRIVATE_KEY_BASE64 }}
+        run: |
+          install -d -m 700 "$RUNNER_TEMP/match-ssh"
+          printf '%s' "$MATCH_GIT_PRIVATE_KEY_BASE64" | base64 --decode > "$RUNNER_TEMP/match-ssh/id_ed25519"
+          chmod 600 "$RUNNER_TEMP/match-ssh/id_ed25519"
+          ssh-keyscan -t ed25519 github.com > "$RUNNER_TEMP/match-ssh/known_hosts"
+          chmod 600 "$RUNNER_TEMP/match-ssh/known_hosts"
+          echo "MATCH_GIT_PRIVATE_KEY=$RUNNER_TEMP/match-ssh/id_ed25519" >> "$GITHUB_ENV"
+          echo "GIT_SSH_COMMAND=ssh -i $RUNNER_TEMP/match-ssh/id_ed25519 -o IdentitiesOnly=yes -o UserKnownHostsFile=$RUNNER_TEMP/match-ssh/known_hosts" >> "$GITHUB_ENV"
+
+      - name: Show build tool versions
+        run: |
+          xcodebuild -version
+          bundle exec fastlane --version
+
+      - name: Test, archive, and upload
+        run: bundle exec fastlane ios release
+
+      - name: Upload build logs when the release fails
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-release-logs-${{ github.run_number }}-${{ github.run_attempt }}
+          path: |
+            ~/Library/Logs/gym
+            fastlane/test_output
+          if-no-files-found: ignore
+          retention-days: 14

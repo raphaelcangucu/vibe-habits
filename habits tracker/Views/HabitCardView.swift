@@ -138,12 +138,19 @@ struct HabitCardView: View {
 
             // Stats bar
             HStack(spacing: 16) {
-                StatItem(label: "This Week", value: formatValue(store.getWeekValue(for: habit)))
-                StatItem(label: "Total Days", value: "\(store.getTotalDays(for: habit))")
+                if habit.frequencyType == .timesPerWeek || habit.frequencyType == .hoursPerWeek {
+                    // For weekly habits, show only 2 metrics
+                    StatItem(label: "This Week", value: formatValue(store.getWeekValue(for: habit)))
 
-                let streakValue = store.getLongestStreak(for: habit)
-                let streakLabel = (habit.frequencyType == .timesPerWeek || habit.frequencyType == .hoursPerWeek) ? "\(streakValue) wks" : "\(streakValue)"
-                StatItem(label: "Best Streak", value: streakLabel)
+                    let weekValue = store.getWeekValue(for: habit)
+                    let completionRate = Int((weekValue / habit.targetValue) * 100)
+                    StatItem(label: "Completion Rate", value: "\(completionRate)%")
+                } else {
+                    // For daily habits, show all 3 metrics
+                    StatItem(label: "This Week", value: formatValue(store.getWeekValue(for: habit)))
+                    StatItem(label: "Total Days", value: "\(store.getTotalDays(for: habit))")
+                    StatItem(label: "Best Streak", value: "\(store.getLongestStreak(for: habit))")
+                }
             }
             .font(.caption)
         }

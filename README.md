@@ -36,6 +36,10 @@ A lightweight iOS habit tracker built with SwiftUI and SwiftData, designed with 
 2. Select your target device (iOS 26.0+)
 3. Build and run (⌘R)
 
+## 🚢 App Store releases
+
+Fastlane and GitHub Actions upload every new semantic version tag (`vMAJOR.MINOR.PATCH`) to App Store Connect/TestFlight. See [docs/APP_STORE_RELEASE.md](docs/APP_STORE_RELEASE.md) for the one-time signing setup, required GitHub secrets, and the App Store submission checklist.
+
 ## 📊 Key Statistics Tracked
 
 - Current & longest streaks

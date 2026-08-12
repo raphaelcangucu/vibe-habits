@@ -88,13 +88,15 @@ struct FeedItemView: View {
             if let photoData = log.photoData,
                let uiImage = UIImage(data: photoData) {
                 ZStack(alignment: .topTrailing) {
-                    Image(uiImage: uiImage)
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .frame(maxWidth: .infinity, alignment: .top)
-                        .frame(height: 200, alignment: .top)
-                        .clipped()
-                        .cornerRadius(12)
+                    GeometryReader { geometry in
+                        Image(uiImage: uiImage)
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                            .frame(width: geometry.size.width, height: 200, alignment: .top)
+                            .clipped()
+                    }
+                    .frame(height: 200)
+                    .cornerRadius(12)
 
                     Button {
                         showingFullImage = true

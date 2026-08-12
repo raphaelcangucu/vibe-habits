@@ -59,21 +59,32 @@ struct InsightsView: View {
                     // Streak Grid for Selected Period
                     VStack(spacing: 8) {
                         if selectedPeriod == .week {
-                            // Single week row view
-                            let weeks = store.getWeeksForPeriod(for: habit, period: selectedPeriod)
-                            HStack(spacing: 4) {
-                                ForEach(weeks.first?.days ?? []) { day in
-                                    VStack(spacing: 4) {
-                                        Text(dayLabel(for: day.date))
-                                            .font(.caption2)
-                                            .foregroundColor(.secondary)
-
-                                        DaySquareViewInsights(day: day, habit: habit, store: store, refreshTrigger: $refreshID)
-                                            .frame(width: 40, height: 40)
+                            // For times/hours per week, show weekly aggregate
+                            if habit.frequencyType == .timesPerWeek || habit.frequencyType == .hoursPerWeek {
+                                let weekStats = store.getWeeklyStats(for: habit, period: selectedPeriod)
+                                VStack(spacing: 12) {
+                                    ForEach(weekStats) { stat in
+                                        WeekStatsCard(stat: stat, habit: habit)
                                     }
                                 }
+                                .id(refreshID)
+                            } else {
+                                // Single week row view for daily habits
+                                let weeks = store.getWeeksForPeriod(for: habit, period: selectedPeriod)
+                                HStack(spacing: 4) {
+                                    ForEach(weeks.first?.days ?? []) { day in
+                                        VStack(spacing: 4) {
+                                            Text(dayLabel(for: day.date))
+                                                .font(.caption2)
+                                                .foregroundColor(.secondary)
+
+                                            DaySquareViewInsights(day: day, habit: habit, store: store, refreshTrigger: $refreshID)
+                                                .frame(width: 40, height: 40)
+                                        }
+                                    }
+                                }
+                                .id(refreshID)
                             }
-                            .id(refreshID)
                         } else if selectedPeriod == .month {
                             // Calendar view for current month
                             let weeks = store.getCurrentMonthCalendar(for: habit)
@@ -198,41 +209,64 @@ struct InsightsView: View {
                     // Metrics Grid
                     VStack(spacing: 12) {
                         let stats = store.getStatisticsForPeriod(for: habit, period: selectedPeriod)
+                        let isWeekBased = habit.frequencyType == .timesPerWeek || habit.frequencyType == .hoursPerWeek
 
-                        HStack(spacing: 12) {
-                            MetricCardCompact(
-                                icon: "trophy.fill",
-                                iconColor: .green,
-                                title: "Longest Streak",
-                                value: "\(stats.longestStreak)",
-                                subtitle: "days"
-                            )
+                        // For week period with times/hours per week habits, show only 2 simple metrics
+                        if selectedPeriod == .week && isWeekBased {
+                            HStack(spacing: 12) {
+                                MetricCardCompact(
+                                    icon: "checkmark.circle.fill",
+                                    iconColor: .green,
+                                    title: "Total Completed",
+                                    value: formatValue(stats.totalValue),
+                                    subtitle: "this week"
+                                )
 
-                            MetricCardCompact(
-                                icon: "calendar",
-                                iconColor: .blue,
-                                title: "Completed Days",
-                                value: "\(stats.completedDays)",
-                                subtitle: "in period"
-                            )
-                        }
+                                MetricCardCompact(
+                                    icon: "chart.bar.fill",
+                                    iconColor: .blue,
+                                    title: "Week Progress",
+                                    value: "\(Int(stats.totalValue))/\(Int(habit.targetValue))",
+                                    subtitle: "\(Int((stats.totalValue / habit.targetValue) * 100))% complete"
+                                )
+                            }
+                        } else {
+                            // For all other cases, show the full 4 metrics
+                            HStack(spacing: 12) {
+                                MetricCardCompact(
+                                    icon: "trophy.fill",
+                                    iconColor: .green,
+                                    title: "Longest Streak",
+                                    value: "\(stats.longestStreak)",
+                                    subtitle: isWeekBased ? "weeks" : "days"
+                                )
 
-                        HStack(spacing: 12) {
-                            MetricCardCompact(
-                                icon: "chart.line.uptrend.xyaxis",
-                                iconColor: .purple,
-                                title: "Completion Rate",
-                                value: "\(Int(stats.completionRate * 100))%",
-                                subtitle: "of period"
-                            )
+                                MetricCardCompact(
+                                    icon: "calendar",
+                                    iconColor: .blue,
+                                    title: isWeekBased ? "Completed Weeks" : "Completed Days",
+                                    value: "\(stats.completedDays)",
+                                    subtitle: "in period"
+                                )
+                            }
 
-                            MetricCardCompact(
-                                icon: "flame.fill",
-                                iconColor: .orange,
-                                title: "Total Value",
-                                value: formatValue(stats.totalValue),
-                                subtitle: "cumulative"
-                            )
+                            HStack(spacing: 12) {
+                                MetricCardCompact(
+                                    icon: "chart.line.uptrend.xyaxis",
+                                    iconColor: .purple,
+                                    title: "Completion Rate",
+                                    value: "\(Int(stats.completionRate * 100))%",
+                                    subtitle: "of period"
+                                )
+
+                                MetricCardCompact(
+                                    icon: "flame.fill",
+                                    iconColor: .orange,
+                                    title: "Total Value",
+                                    value: formatValue(stats.totalValue),
+                                    subtitle: "cumulative"
+                                )
+                            }
                         }
                     }
 
@@ -546,6 +580,65 @@ struct MetricCardCompact: View {
         .background(Color(.systemBackground))
         .cornerRadius(12)
         .shadow(color: .black.opacity(0.05), radius: 4, x: 0, y: 2)
+    }
+}
+
+// MARK: - Week Stats Card
+
+struct WeekStatsCard: View {
+    let stat: WeeklyStatistic
+    let habit: Habit
+
+    var body: some View {
+        HStack(spacing: 16) {
+            VStack(alignment: .leading, spacing: 4) {
+                Text(stat.weekLabel)
+                    .font(.subheadline)
+                    .fontWeight(.semibold)
+                    .foregroundColor(.primary)
+
+                Text(stat.dateRange)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+
+            Spacer()
+
+            VStack(alignment: .trailing, spacing: 4) {
+                HStack(spacing: 4) {
+                    Text(formatValue(stat.totalValue))
+                        .font(.title2)
+                        .fontWeight(.bold)
+                        .foregroundColor(stat.isComplete ? .green : .primary)
+
+                    Text("/ \(formatValue(habit.targetValue))")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                }
+
+                HStack(spacing: 4) {
+                    if stat.isComplete {
+                        Image(systemName: "checkmark.circle.fill")
+                            .font(.caption)
+                            .foregroundColor(.green)
+                    }
+                    Text(stat.completionText)
+                        .font(.caption)
+                        .foregroundColor(stat.isComplete ? .green : .secondary)
+                }
+            }
+        }
+        .padding()
+        .background(Color(.systemBackground))
+        .cornerRadius(12)
+        .shadow(color: .black.opacity(0.05), radius: 4, x: 0, y: 2)
+    }
+
+    private func formatValue(_ value: Double) -> String {
+        if value.truncatingRemainder(dividingBy: 1) == 0 {
+            return "\(Int(value))"
+        }
+        return String(format: "%.1f", value)
     }
 }
 

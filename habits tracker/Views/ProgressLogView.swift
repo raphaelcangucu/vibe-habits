@@ -105,13 +105,15 @@ struct ProgressLogView: View {
 
                             if let data = photoData, let uiImage = UIImage(data: data) {
                                 ZStack(alignment: .topTrailing) {
-                                    Image(uiImage: uiImage)
-                                        .resizable()
-                                        .aspectRatio(contentMode: .fill)
-                                        .frame(height: 150)
-                                        .frame(maxWidth: .infinity)
-                                        .clipped()
-                                        .cornerRadius(12)
+                                    GeometryReader { geometry in
+                                        Image(uiImage: uiImage)
+                                            .resizable()
+                                            .aspectRatio(contentMode: .fill)
+                                            .frame(width: geometry.size.width, height: 150, alignment: .top)
+                                            .clipped()
+                                    }
+                                    .frame(height: 150)
+                                    .cornerRadius(12)
 
                                     Button {
                                         photoData = nil

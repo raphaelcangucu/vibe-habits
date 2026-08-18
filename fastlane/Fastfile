@@ -99,7 +99,6 @@ platform :ios do
       skip_metadata: ENV["SKIP_STORE_METADATA"] == "true",
       skip_app_version_update: false,
       overwrite_screenshots: true,
-      sync_screenshots: true,
       submit_for_review: false,
       automatic_release: false,
       force: true,

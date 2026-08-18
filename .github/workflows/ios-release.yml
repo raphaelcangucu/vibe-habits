@@ -16,6 +16,11 @@ on:
         required: true
         default: true
         type: boolean
+      submit_for_review:
+        description: Submit the editable App Store version for review after validation
+        required: true
+        default: false
+        type: boolean
 
 permissions:
   contents: read
@@ -80,6 +85,7 @@ jobs:
       - name: Upload App Store metadata and screenshots
         env:
           REQUESTED_APP_STORE_VERSION: ${{ inputs.app_store_version }}
+          SUBMIT_FOR_REVIEW: ${{ inputs.submit_for_review }}
         run: |
           if [[ "$GITHUB_EVENT_NAME" == "workflow_dispatch" ]]; then
             app_store_version="$REQUESTED_APP_STORE_VERSION"

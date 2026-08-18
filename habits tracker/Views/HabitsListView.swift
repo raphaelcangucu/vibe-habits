@@ -7,12 +7,16 @@
 
 import SwiftUI
 import SwiftData
+import StoreKit
 
 struct HabitsListView: View {
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.requestReview) private var requestReview
     @Query(sort: \Habit.createdAt, order: .forward) private var habits: [Habit]
+    @Query private var logs: [HabitLog]
 
     @State private var showingAddHabit = false
+    @AppStorage("reviewMilestoneRequested") private var reviewMilestoneRequested = false
 
     private var habitStore: HabitStore {
         HabitStore(modelContext: modelContext)
@@ -46,10 +50,15 @@ struct HabitsListView: View {
                             .font(.title2)
                             .imageScale(.large)
                     }
+                    .accessibilityLabel("Add habit")
+                    .accessibilityHint("Opens the form to create a new habit")
                 }
             }
             .sheet(isPresented: $showingAddHabit) {
                 AddHabitView(store: habitStore)
+            }
+            .onReceive(NotificationCenter.default.publisher(for: .habitCompleted)) { _ in
+                requestReviewAtMilestoneIfNeeded()
             }
         }
     }
@@ -83,6 +92,14 @@ struct HabitsListView: View {
             }
             .padding(.top, 8)
         }
+    }
+
+    private func requestReviewAtMilestoneIfNeeded() {
+        guard !reviewMilestoneRequested else { return }
+        guard logs.filter(\.completed).count >= 7 else { return }
+
+        reviewMilestoneRequested = true
+        requestReview()
     }
 }
 

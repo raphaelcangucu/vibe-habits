@@ -1,6 +1,6 @@
 # Publicação do Vibe Habits na App Store
 
-Este projeto envia toda nova tag semântica (`vMAJOR.MINOR.PATCH`) ao App Store Connect/TestFlight usando Fastlane e GitHub Actions. A liberação pública permanece manual no App Store Connect, o que evita publicar uma versão acidentalmente e permite revisar screenshots, metadados e respostas legais antes de cada envio à revisão.
+Este projeto envia toda nova tag semântica (`vMAJOR.MINOR.PATCH`) ao App Store Connect/TestFlight usando Fastlane e GitHub Actions. O mesmo workflow também sincroniza a ficha e substitui os screenshots da versão correspondente. A submissão à análise e a liberação pública permanecem manuais no App Store Connect, o que evita publicar uma versão acidentalmente antes de revisar as respostas legais.
 
 ## 1. Confirmar a identidade do app
 
@@ -11,6 +11,8 @@ O projeto está configurado com:
 - Nome na App Store: `Vibe Habits: Habit Tracker`
 - Nome no dispositivo: `Vibe Habits`
 - Bundle ID: `app.vibehabits.ios`
+- Widget Bundle ID: `app.vibehabits.ios.widget`
+- App Group: `group.app.vibehabits.ios`
 - App Store Connect ID: `6800547603`
 - Apple Developer Team ID: `SB6QYUH97U`
 - Categoria principal: Productivity
@@ -69,8 +71,8 @@ Esses secrets já estão configurados no repositório `raphaelcangucu/vibe-habit
 Faça o merge das mudanças desejadas e crie uma nova tag anotada:
 
 ```sh
-git tag -a v1.0.6 -m 'Vibe Habits 1.0.6'
-git push origin v1.0.6
+git tag -a v1.1.0 -m 'Vibe Habits 1.1.0'
+git push origin v1.1.0
 ```
 
 O workflow `.github/workflows/ios-release.yml` irá:
@@ -79,7 +81,8 @@ O workflow `.github/workflows/ios-release.yml` irá:
 2. executar os testes unitários obrigatórios;
 3. baixar certificado e profile do Match para um keychain temporário;
 4. gerar o archive Release com a versão da tag;
-5. enviar o `.ipa` ao App Store Connect/TestFlight.
+5. enviar o `.ipa` ao App Store Connect/TestFlight;
+6. criar ou atualizar a versão da App Store com os metadados e screenshots versionados no repositório.
 
 Tags como `release-1.0.2` ou `v1.0` falham de propósito. Em uma reexecução, o sufixo `GITHUB_RUN_ATTEMPT` produz um novo número de build.
 
@@ -87,12 +90,12 @@ Tags como `release-1.0.2` ou `v1.0` falham de propósito. Em uma reexecução, o
 
 Antes de enviar à análise, complete no App Store Connect:
 
-- descrição, subtítulo, palavras-chave, URL de suporte e copyright;
-- política de privacidade: `https://github.com/raphaelcangucu/vibe-habits/blob/main/PRIVACY.md`;
+- confirme descrição, subtítulo, palavras-chave, URLs e screenshots sincronizados automaticamente pelo release;
+- política de privacidade: `https://raphaelcangucu.github.io/vibe-habits/privacy/`;
 - App Privacy: para o código atual, selecione que o app não coleta dados, pois hábitos e fotos permanecem no dispositivo e não há analytics, anúncios ou tracking;
 - questionário atualizado de classificação etária;
 - disponibilidade, preço (gratuito, se essa for a escolha) e status de comerciante para distribuição na União Europeia;
-- de 1 a 10 screenshots sem transparência. Os conjuntos versionados em `fastlane/screenshots/en-US` cobrem iPhone 6,9 polegadas e iPad 13 polegadas;
+- de 1 a 10 screenshots sem transparência. Os conjuntos versionados em `fastlane/screenshots/en-US` e `fastlane/screenshots/pt-BR` cobrem iPhone 6,9 polegadas e iPad 13 polegadas;
 - informações de revisão: o app não exige login, funciona offline, câmera/fotos são opcionais e as notificações são locais;
 - selecione o build processado pelo TestFlight e escolha liberação manual, automática ou gradual.
 
@@ -117,5 +120,5 @@ Um release local requer todas as variáveis de `.env` e uma tag informada por `R
 Para validar localmente testes, assinatura, archive e exportação sem enviar o build:
 
 ```sh
-RELEASE_TAG=v1.0.6 SKIP_UPLOAD=true bundle exec fastlane ios release
+RELEASE_TAG=v1.1.0 SKIP_UPLOAD=true bundle exec fastlane ios release
 ```

@@ -8,6 +8,11 @@ A lightweight iOS habit tracker built with SwiftUI and SwiftData, designed with 
 - **Flexible Tracking**: Support for daily goals, weekly frequency, and hourly targets
 - **Progress Insights**: Comprehensive statistics including streaks, completion rates, and motivational messages
 - **Daily Reminders**: Push notifications to help maintain consistency (9 PM daily)
+- **Per-habit Reminders**: Choose a reminder time while creating a habit
+- **Starter Templates**: Begin with practical examples during onboarding
+- **Portable Backups**: Export and restore your data as a JSON file you control
+- **Home Screen Widgets**: Glance at today's completed habits without opening the app
+- **English & Brazilian Portuguese**: Localized app and App Store listing
 - **Native iOS Design**: Clean, intuitive interface following HIG principles
 
 ## 🏗 Architecture
@@ -33,12 +38,12 @@ A lightweight iOS habit tracker built with SwiftUI and SwiftData, designed with 
 ## 🚀 Getting Started
 
 1. Open `habits tracker.xcodeproj` in Xcode 16+
-2. Select your target device (iOS 26.0+)
+2. Select your target device (iOS 18.6+)
 3. Build and run (⌘R)
 
 ## 🚢 App Store releases
 
-Fastlane and GitHub Actions upload every new semantic version tag (`vMAJOR.MINOR.PATCH`) to App Store Connect/TestFlight. See [docs/APP_STORE_RELEASE.md](docs/APP_STORE_RELEASE.md) for the one-time signing setup, required GitHub secrets, and the App Store submission checklist.
+Fastlane and GitHub Actions upload every new semantic version tag (`vMAJOR.MINOR.PATCH`) to App Store Connect/TestFlight and synchronize the version's metadata and screenshots. See [docs/APP_STORE_RELEASE.md](docs/APP_STORE_RELEASE.md) for the one-time signing setup, required GitHub secrets, and the App Store submission checklist.
 
 ## 📊 Key Statistics Tracked
 

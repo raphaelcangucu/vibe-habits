@@ -1,0 +1,1572 @@
+{
+  "sourceLanguage": "en",
+  "strings": {
+    "": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": ""
+          }
+        }
+      }
+    },
+    "@raphaelcangucu": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "@raphaelcangucu"
+          }
+        }
+      }
+    },
+    "/ %@": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "/ %@"
+          }
+        }
+      }
+    },
+    "%@": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@"
+          }
+        }
+      }
+    },
+    "%lld": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld"
+          }
+        }
+      }
+    },
+    "%lld%% complete": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld%% concluído"
+          }
+        }
+      }
+    },
+    "0": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "0"
+          }
+        }
+      }
+    },
+    "2–3x/week: Read a book chapter": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "2–3x/semana: Ler um capítulo de livro"
+          }
+        }
+      }
+    },
+    "2:00 PM - Keep the momentum going": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "14:00 — Continue no ritmo"
+          }
+        }
+      }
+    },
+    "6h/week: Work on side project": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "6h/semana: Trabalhar em um projeto pessoal"
+          }
+        }
+      }
+    },
+    "8:00 AM - Start your day strong": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "08:00 — Comece o dia com energia"
+          }
+        }
+      }
+    },
+    "9:00 PM - Log your daily progress": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "21:00 — Registre seu progresso diário"
+          }
+        }
+      }
+    },
+    "A few pages before bed.": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Algumas páginas antes de dormir."
+          }
+        }
+      }
+    },
+    "A small step today keeps your momentum going.": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Um pequeno passo hoje mantém seu ritmo."
+          }
+        }
+      }
+    },
+    "About": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sobre"
+          }
+        }
+      }
+    },
+    "Add habit": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Adicionar hábito"
+          }
+        }
+      }
+    },
+    "Add Habit": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Adicionar hábito"
+          }
+        }
+      }
+    },
+    "Add Item": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Adicionar item"
+          }
+        }
+      }
+    },
+    "Add Note (Optional)": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Adicionar nota (opcional)"
+          }
+        }
+      }
+    },
+    "Add Photo (Optional)": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Adicionar foto (opcional)"
+          }
+        }
+      }
+    },
+    "and maybe I'll build it!": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "e talvez eu desenvolva!"
+          }
+        }
+      }
+    },
+    "Backups are JSON files you control. Nothing is uploaded by Vibe Habits.": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Os backups são arquivos JSON sob seu controle. O Vibe Habits não envia nada para a nuvem."
+          }
+        }
+      }
+    },
+    "Be consistent – Daily actions build momentum": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Seja consistente – Ações diárias criam ritmo"
+          }
+        }
+      }
+    },
+    "Best Streak": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Melhor sequência"
+          }
+        }
+      }
+    },
+    "Build habits that actually stick": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Crie hábitos que permanecem"
+          }
+        }
+      }
+    },
+    "Build momentum, one day at a time": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Crie ritmo, um dia de cada vez"
+          }
+        }
+      }
+    },
+    "Camera": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Câmera"
+          }
+        }
+      }
+    },
+    "Cancel": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cancelar"
+          }
+        }
+      }
+    },
+    "Choose goals that fit your life, log progress in seconds, and grow one day at a time.": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Escolha metas que combinam com sua vida, registre o progresso em segundos e evolua um dia de cada vez."
+          }
+        }
+      }
+    },
+    "Completed": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Concluído"
+          }
+        }
+      }
+    },
+    "Completed Days": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dias concluídos"
+          }
+        }
+      }
+    },
+    "Completed Weeks": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Semanas concluídas"
+          }
+        }
+      }
+    },
+    "Completion Rate": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Taxa de conclusão"
+          }
+        }
+      }
+    },
+    "Continue": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Continuar"
+          }
+        }
+      }
+    },
+    "Create Habit": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Criar hábito"
+          }
+        }
+      }
+    },
+    "Create your first habit and build consistency one day at a time": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Crie seu primeiro hábito e desenvolva consistência um dia de cada vez"
+          }
+        }
+      }
+    },
+    "cumulative": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "acumulado"
+          }
+        }
+      }
+    },
+    "Daily Goal": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Meta diária"
+          }
+        }
+      }
+    },
+    "Daily Reminders": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lembretes diários"
+          }
+        }
+      }
+    },
+    "Daily Target": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Meta diária"
+          }
+        }
+      }
+    },
+    "Daily: 100 Push-ups": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Diário: 100 flexões"
+          }
+        }
+      }
+    },
+    "Data Transfer": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Transferência de dados"
+          }
+        }
+      }
+    },
+    "days": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "dias"
+          }
+        }
+      }
+    },
+    "Delete Entry": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Excluir registro"
+          }
+        }
+      }
+    },
+    "Drink water": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Beber água"
+          }
+        }
+      }
+    },
+    "e.g., 100 Push-ups, Read a book": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ex.: 100 flexões, ler um livro"
+          }
+        }
+      }
+    },
+    "Edit Progress": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Editar progresso"
+          }
+        }
+      }
+    },
+    "Enter Progress": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Informe o progresso"
+          }
+        }
+      }
+    },
+    "Evening Reflection": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reflexão noturna"
+          }
+        }
+      }
+    },
+    "Evening Reflection 🌙": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reflexão noturna 🌙"
+          }
+        }
+      }
+    },
+    "Examples:": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Exemplos:"
+          }
+        }
+      }
+    },
+    "Exercise": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Exercícios"
+          }
+        }
+      }
+    },
+    "Export Backup": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Exportar backup"
+          }
+        }
+      }
+    },
+    "Feed": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Histórico"
+          }
+        }
+      }
+    },
+    "Feedback": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Feedback"
+          }
+        }
+      }
+    },
+    "Feeling ambitious?": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quer ir além?"
+          }
+        }
+      }
+    },
+    "Fork the project on GitHub and build it yourself! Open-source vibes ✨": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Faça um fork do projeto no GitHub e construa você também! Espírito open source ✨"
+          }
+        }
+      }
+    },
+    "Frequency": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Frequência"
+          }
+        }
+      }
+    },
+    "Fresh air and a strong start to the day.": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ar fresco e um ótimo começo de dia."
+          }
+        }
+      }
+    },
+    "Fri": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sex"
+          }
+        }
+      }
+    },
+    "Gallery": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Galeria"
+          }
+        }
+      }
+    },
+    "Good Morning! 🌅": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bom dia! 🌅"
+          }
+        }
+      }
+    },
+    "Got ideas? Want a new feature?": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tem uma ideia? Quer um novo recurso?"
+          }
+        }
+      }
+    },
+    "Great start! Keep going to build a strong foundation. Consistency is key!": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ótimo começo! Continue para criar uma base sólida. Consistência é essencial!"
+          }
+        }
+      }
+    },
+    "Habit name": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nome do hábito"
+          }
+        }
+      }
+    },
+    "Habit Name": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nome do hábito"
+          }
+        }
+      }
+    },
+    "Habits": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hábitos"
+          }
+        }
+      }
+    },
+    "Hours per Week": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Horas por semana"
+          }
+        }
+      }
+    },
+    "hours/week": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "horas/semana"
+          }
+        }
+      }
+    },
+    "How did it go?": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Como foi?"
+          }
+        }
+      }
+    },
+    "How's your progress today? Keep the momentum going!": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Como está seu progresso hoje? Continue no ritmo!"
+          }
+        }
+      }
+    },
+    "Impressive dedication! You're well on your way to making this a lifestyle.": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dedicação impressionante! Você está no caminho certo para transformar isso em um estilo de vida."
+          }
+        }
+      }
+    },
+    "in period": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "no período"
+          }
+        }
+      }
+    },
+    "Insights": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Análises"
+          }
+        }
+      }
+    },
+    "Item at %@": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Item em %@"
+          }
+        }
+      }
+    },
+    "Less": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Menos"
+          }
+        }
+      }
+    },
+    "Log Progress": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Registrar progresso"
+          }
+        }
+      }
+    },
+    "Longest Streak": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Maior sequência"
+          }
+        }
+      }
+    },
+    "Mark Complete": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Marcar como concluído"
+          }
+        }
+      }
+    },
+    "Midday Check-in": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lembrete da tarde"
+          }
+        }
+      }
+    },
+    "Midday Check-in ☀️": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lembrete da tarde ☀️"
+          }
+        }
+      }
+    },
+    "Mon": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Seg"
+          }
+        }
+      }
+    },
+    "Month": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mês"
+          }
+        }
+      }
+    },
+    "More": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mais"
+          }
+        }
+      }
+    },
+    "Morning Reminder": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lembrete da manhã"
+          }
+        }
+      }
+    },
+    "Morning walk": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Caminhada matinal"
+          }
+        }
+      }
+    },
+    "Morning Walk": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Caminhada matinal"
+          }
+        }
+      }
+    },
+    "New Habit": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Novo hábito"
+          }
+        }
+      }
+    },
+    "No account, no advertising, and no tracking. Your habits stay on your device.": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sem conta, publicidade ou rastreamento. Seus hábitos ficam no seu dispositivo."
+          }
+        }
+      }
+    },
+    "No Activity Yet": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nenhuma atividade ainda"
+          }
+        }
+      }
+    },
+    "Not selected": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Não selecionado"
+          }
+        }
+      }
+    },
+    "of period": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "do período"
+          }
+        }
+      }
+    },
+    "OK": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OK"
+          }
+        }
+      }
+    },
+    "Opens the form to create a new habit": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Abre o formulário para criar um novo hábito"
+          }
+        }
+      }
+    },
+    "Outstanding! You've transformed this into a lasting habit. Keep up the amazing work!": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Extraordinário! Você transformou isso em um hábito duradouro. Continue assim!"
+          }
+        }
+      }
+    },
+    "per day": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "por dia"
+          }
+        }
+      }
+    },
+    "Pick any examples you want. You can edit or delete them later.": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Escolha os exemplos que quiser. Você poderá editá-los ou excluí-los depois."
+          }
+        }
+      }
+    },
+    "Post it on Twitter/X with your suggestions": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Publique no Twitter/X com suas sugestões"
+          }
+        }
+      }
+    },
+    "Privacy & Support": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Privacidade e suporte"
+          }
+        }
+      }
+    },
+    "Privacy Policy": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Política de privacidade"
+          }
+        }
+      }
+    },
+    "Private by design": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Privado por natureza"
+          }
+        }
+      }
+    },
+    "Rate Vibe Habits": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Avaliar o Vibe Habits"
+          }
+        }
+      }
+    },
+    "Read every day": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ler todos os dias"
+          }
+        }
+      }
+    },
+    "Read Every Day": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ler todos os dias"
+          }
+        }
+      }
+    },
+    "Read before bed": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ler antes de dormir"
+          }
+        }
+      }
+    },
+    "Remind me": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lembrar-me"
+          }
+        }
+      }
+    },
+    "Reminder": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lembrete"
+          }
+        }
+      }
+    },
+    "Reminder time": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Horário do lembrete"
+          }
+        }
+      }
+    },
+    "Restore Backup": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restaurar backup"
+          }
+        }
+      }
+    },
+    "Restored %lld items successfully.": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld itens restaurados com sucesso."
+          }
+        }
+      }
+    },
+    "Save Changes": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Salvar alterações"
+          }
+        }
+      }
+    },
+    "Select an item": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Selecione um item"
+          }
+        }
+      }
+    },
+    "Selected": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Selecionado"
+          }
+        }
+      }
+    },
+    "Settings": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ajustes"
+          }
+        }
+      }
+    },
+    "Skip": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pular"
+          }
+        }
+      }
+    },
+    "Start building momentum": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Começar a criar ritmo"
+          }
+        }
+      }
+    },
+    "Start logging your habits to see them here!": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Comece a registrar seus hábitos para vê-los aqui!"
+          }
+        }
+      }
+    },
+    "Start small – Focus on 2–3 habits": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Comece pequeno – Foque em 2 ou 3 hábitos"
+          }
+        }
+      }
+    },
+    "Start today and build momentum! Every journey begins with a single step.": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Comece hoje e crie ritmo! Toda jornada começa com um primeiro passo."
+          }
+        }
+      }
+    },
+    "Start with a few small wins": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Comece com pequenas conquistas"
+          }
+        }
+      }
+    },
+    "Start your day strong! Your habits are waiting for you.": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Comece o dia com energia! Seus hábitos esperam por você."
+          }
+        }
+      }
+    },
+    "Start Your Journey": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Comece sua jornada"
+          }
+        }
+      }
+    },
+    "Strength Training": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Treino de força"
+          }
+        }
+      }
+    },
+    "Support": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Suporte"
+          }
+        }
+      }
+    },
+    "Tag me": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Marque-me"
+          }
+        }
+      }
+    },
+    "Take a screenshot of your idea": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tire uma captura da sua ideia"
+          }
+        }
+      }
+    },
+    "Talk to the Dev": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fale com o desenvolvedor"
+          }
+        }
+      }
+    },
+    "Target: %@": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Meta: %@"
+          }
+        }
+      }
+    },
+    "This backup was created by an unsupported version of Vibe Habits.": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Este backup foi criado por uma versão não compatível do Vibe Habits."
+          }
+        }
+      }
+    },
+    "this week": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "esta semana"
+          }
+        }
+      }
+    },
+    "This Week": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Esta semana"
+          }
+        }
+      }
+    },
+    "Time for %@": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hora de %@"
+          }
+        }
+      }
+    },
+    "Time Period": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Período"
+          }
+        }
+      }
+    },
+    "Time to log your progress! Did you complete your habits today?": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hora de registrar seu progresso! Você concluiu seus hábitos hoje?"
+          }
+        }
+      }
+    },
+    "Times per Week": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vezes por semana"
+          }
+        }
+      }
+    },
+    "times/week": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "vezes/semana"
+          }
+        }
+      }
+    },
+    "Tips": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dicas"
+          }
+        }
+      }
+    },
+    "Tips for Success": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dicas para ter sucesso"
+          }
+        }
+      }
+    },
+    "Today: %@ | This week: %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "Today: %1$@ | This week: %2$@"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hoje: %@ | Esta semana: %@"
+          }
+        }
+      }
+    },
+    "Total Completed": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Total concluído"
+          }
+        }
+      }
+    },
+    "Total Days": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Total de dias"
+          }
+        }
+      }
+    },
+    "Total Value": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Valor total"
+          }
+        }
+      }
+    },
+    "Track honestly – Missing a day is okay": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Registre com sinceridade – Tudo bem perder um dia"
+          }
+        }
+      }
+    },
+    "Unmark as Completed": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Desmarcar conclusão"
+          }
+        }
+      }
+    },
+    "Update Progress": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Atualizar progresso"
+          }
+        }
+      }
+    },
+    "Version": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Versão"
+          }
+        }
+      }
+    },
+    "Vibe Habits": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vibe Habits"
+          }
+        }
+      }
+    },
+    "Vibe Habits helps you build consistency through intuitive progress tracking, visual streaks, and meaningful insights.": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O Vibe Habits ajuda você a criar consistência com registros intuitivos, sequências visuais e análises úteis."
+          }
+        }
+      }
+    },
+    "Wed": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Qua"
+          }
+        }
+      }
+    },
+    "Week": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Semana"
+          }
+        }
+      }
+    },
+    "Week Progress": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Progresso semanal"
+          }
+        }
+      }
+    },
+    "weeks": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "semanas"
+          }
+        }
+      }
+    },
+    "Year": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ano"
+          }
+        }
+      }
+    },
+    "You can change this reminder at any time.": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Você pode alterar este lembrete a qualquer momento."
+          }
+        }
+      }
+    },
+    "You're building a solid habit! Stay consistent and watch your progress grow.": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Você está criando um hábito sólido! Mantenha a consistência e veja seu progresso crescer."
+          }
+        }
+      }
+    },
+    "Your Data": {
+      "localizations": {
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Seus dados"
+          }
+        }
+      }
+    }
+  },
+  "version": "1.1"
+}

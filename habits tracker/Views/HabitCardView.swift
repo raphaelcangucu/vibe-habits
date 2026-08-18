@@ -284,7 +284,7 @@ struct DaySquareView: View {
 // MARK: - Stats Item
 
 struct StatItem: View {
-    let label: String
+    let label: LocalizedStringKey
     let value: String
 
     var body: some View {

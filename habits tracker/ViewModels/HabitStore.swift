@@ -8,6 +8,10 @@
 import Foundation
 import SwiftData
 
+extension Notification.Name {
+    static let habitCompleted = Notification.Name("habitCompleted")
+}
+
 @Observable
 class HabitStore {
     private var modelContext: ModelContext
@@ -18,10 +22,26 @@ class HabitStore {
 
     // MARK: - Habit Management
 
-    func addHabit(name: String, frequencyType: FrequencyType, targetValue: Double) {
-        let habit = Habit(name: name, frequencyType: frequencyType, targetValue: targetValue)
+    @discardableResult
+    func addHabit(
+        name: String,
+        frequencyType: FrequencyType,
+        targetValue: Double,
+        reminderEnabled: Bool = false,
+        reminderHour: Int = 8,
+        reminderMinute: Int = 0
+    ) -> Habit {
+        let habit = Habit(
+            name: name,
+            frequencyType: frequencyType,
+            targetValue: targetValue,
+            reminderEnabled: reminderEnabled,
+            reminderHour: reminderHour,
+            reminderMinute: reminderMinute
+        )
         modelContext.insert(habit)
         try? modelContext.save()
+        return habit
     }
 
     func updateHabitName(habit: Habit, newName: String) {
@@ -37,6 +57,7 @@ class HabitStore {
         // Delete the habit
         modelContext.delete(habit)
         try? modelContext.save()
+        NotificationManager.shared.cancelReminder(for: habit.id)
     }
 
     // MARK: - Log Management
@@ -80,6 +101,10 @@ class HabitStore {
         }
 
         try? modelContext.save()
+
+        if isCompleted {
+            NotificationCenter.default.post(name: .habitCompleted, object: habit.id)
+        }
     }
 
     func markComplete(for habit: Habit, date: Date = Date()) {

@@ -13,7 +13,14 @@ enum TimePeriod: String, CaseIterable {
     case year = "Year"
 
     var displayName: String {
-        self.rawValue
+        switch self {
+        case .week:
+            return String(localized: "Week")
+        case .month:
+            return String(localized: "Month")
+        case .year:
+            return String(localized: "Year")
+        }
     }
 }
 

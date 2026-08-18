@@ -217,17 +217,17 @@ struct InsightsView: View {
                                 MetricCardCompact(
                                     icon: "checkmark.circle.fill",
                                     iconColor: .green,
-                                    title: "Total Completed",
+                                    title: String(localized: "Total Completed"),
                                     value: formatValue(stats.totalValue),
-                                    subtitle: "this week"
+                                    subtitle: String(localized: "this week")
                                 )
 
                                 MetricCardCompact(
                                     icon: "chart.bar.fill",
                                     iconColor: .blue,
-                                    title: "Week Progress",
+                                    title: String(localized: "Week Progress"),
                                     value: "\(Int(stats.totalValue))/\(Int(habit.targetValue))",
-                                    subtitle: "\(Int((stats.totalValue / habit.targetValue) * 100))% complete"
+                                    subtitle: String(localized: "\(Int((stats.totalValue / habit.targetValue) * 100))% complete")
                                 )
                             }
                         } else {
@@ -236,17 +236,17 @@ struct InsightsView: View {
                                 MetricCardCompact(
                                     icon: "trophy.fill",
                                     iconColor: .green,
-                                    title: "Longest Streak",
+                                    title: String(localized: "Longest Streak"),
                                     value: "\(stats.longestStreak)",
-                                    subtitle: isWeekBased ? "weeks" : "days"
+                                    subtitle: isWeekBased ? String(localized: "weeks") : String(localized: "days")
                                 )
 
                                 MetricCardCompact(
                                     icon: "calendar",
                                     iconColor: .blue,
-                                    title: isWeekBased ? "Completed Weeks" : "Completed Days",
+                                    title: isWeekBased ? String(localized: "Completed Weeks") : String(localized: "Completed Days"),
                                     value: "\(stats.completedDays)",
-                                    subtitle: "in period"
+                                    subtitle: String(localized: "in period")
                                 )
                             }
 
@@ -254,17 +254,17 @@ struct InsightsView: View {
                                 MetricCardCompact(
                                     icon: "chart.line.uptrend.xyaxis",
                                     iconColor: .purple,
-                                    title: "Completion Rate",
+                                    title: String(localized: "Completion Rate"),
                                     value: "\(Int(stats.completionRate * 100))%",
-                                    subtitle: "of period"
+                                    subtitle: String(localized: "of period")
                                 )
 
                                 MetricCardCompact(
                                     icon: "flame.fill",
                                     iconColor: .orange,
-                                    title: "Total Value",
+                                    title: String(localized: "Total Value"),
                                     value: formatValue(stats.totalValue),
-                                    subtitle: "cumulative"
+                                    subtitle: String(localized: "cumulative")
                                 )
                             }
                         }
@@ -302,15 +302,15 @@ struct InsightsView: View {
 
     private var motivationalMessage: String {
         if currentStreak == 0 {
-            return "Start today and build momentum! Every journey begins with a single step."
+            return String(localized: "Start today and build momentum! Every journey begins with a single step.")
         } else if currentStreak < 7 {
-            return "Great start! Keep going to build a strong foundation. Consistency is key!"
+            return String(localized: "Great start! Keep going to build a strong foundation. Consistency is key!")
         } else if currentStreak < 30 {
-            return "You're building a solid habit! Stay consistent and watch your progress grow."
+            return String(localized: "You're building a solid habit! Stay consistent and watch your progress grow.")
         } else if currentStreak < 90 {
-            return "Impressive dedication! You're well on your way to making this a lifestyle."
+            return String(localized: "Impressive dedication! You're well on your way to making this a lifestyle.")
         } else {
-            return "Outstanding! You've transformed this into a lasting habit. Keep up the amazing work!"
+            return String(localized: "Outstanding! You've transformed this into a lasting habit. Keep up the amazing work!")
         }
     }
 

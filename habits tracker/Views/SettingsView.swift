@@ -5,17 +5,65 @@
 //  Created by Raphael Canguçu on 05/10/25.
 //
 
+import StoreKit
+import SwiftData
 import SwiftUI
+import UniformTypeIdentifiers
 
 struct SettingsView: View {
+    @Environment(\.modelContext) private var modelContext
+    @Environment(\.requestReview) private var requestReview
     @AppStorage("morningReminderEnabled") private var morningReminderEnabled = false
     @AppStorage("afternoonReminderEnabled") private var afternoonReminderEnabled = false
     @AppStorage("eveningReminderEnabled") private var eveningReminderEnabled = false
     @State private var notificationManager = NotificationManager.shared
+    @State private var exportDocument: HabitBackupDocument?
+    @State private var isExporting = false
+    @State private var isImporting = false
+    @State private var transferMessage: String?
 
     var body: some View {
         NavigationStack {
             List {
+                Section("Your Data") {
+                    Button {
+                        do {
+                            exportDocument = try HabitBackupService.makeDocument(modelContext: modelContext)
+                            isExporting = true
+                        } catch {
+                            transferMessage = error.localizedDescription
+                        }
+                    } label: {
+                        Label("Export Backup", systemImage: "square.and.arrow.up")
+                    }
+
+                    Button {
+                        isImporting = true
+                    } label: {
+                        Label("Restore Backup", systemImage: "square.and.arrow.down")
+                    }
+
+                    Text("Backups are JSON files you control. Nothing is uploaded by Vibe Habits.")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+
+                Section("Privacy & Support") {
+                    Link(destination: URL(string: "https://raphaelcangucu.github.io/vibe-habits/privacy/")!) {
+                        Label("Privacy Policy", systemImage: "hand.raised.fill")
+                    }
+
+                    Link(destination: URL(string: "https://raphaelcangucu.github.io/vibe-habits/support/")!) {
+                        Label("Support", systemImage: "questionmark.circle.fill")
+                    }
+
+                    Button {
+                        requestReview()
+                    } label: {
+                        Label("Rate Vibe Habits", systemImage: "star.fill")
+                    }
+                }
+
                 // Notifications Section
                 Section {
                     // Morning Reminder
@@ -153,16 +201,6 @@ struct SettingsView: View {
                     Text("About")
                 }
 
-                Section("Privacy & Support") {
-                    Link(destination: URL(string: "https://github.com/raphaelcangucu/vibe-habits/blob/main/PRIVACY.md")!) {
-                        Label("Privacy Policy", systemImage: "hand.raised.fill")
-                    }
-
-                    Link(destination: URL(string: "https://github.com/raphaelcangucu/vibe-habits/blob/main/SUPPORT.md")!) {
-                        Label("Support", systemImage: "questionmark.circle.fill")
-                    }
-                }
-
                 // Tips Section
                 Section {
                     VStack(alignment: .leading, spacing: 16) {
@@ -274,6 +312,38 @@ struct SettingsView: View {
                 }
             }
             .navigationTitle("Settings")
+            .fileExporter(
+                isPresented: $isExporting,
+                document: exportDocument,
+                contentType: .json,
+                defaultFilename: "Vibe-Habits-Backup"
+            ) { result in
+                if case .failure(let error) = result {
+                    transferMessage = error.localizedDescription
+                }
+            }
+            .fileImporter(isPresented: $isImporting, allowedContentTypes: [.json]) { result in
+                do {
+                    let url = try result.get()
+                    let hasAccess = url.startAccessingSecurityScopedResource()
+                    defer {
+                        if hasAccess { url.stopAccessingSecurityScopedResource() }
+                    }
+                    let data = try Data(contentsOf: url)
+                    let restored = try HabitBackupService.restore(data: data, modelContext: modelContext)
+                    transferMessage = String(localized: "Restored \(restored) items successfully.")
+                } catch {
+                    transferMessage = error.localizedDescription
+                }
+            }
+            .alert("Data Transfer", isPresented: Binding(
+                get: { transferMessage != nil },
+                set: { if !$0 { transferMessage = nil } }
+            )) {
+                Button("OK", role: .cancel) {}
+            } message: {
+                Text(transferMessage ?? "")
+            }
         }
     }
 
@@ -284,7 +354,7 @@ struct SettingsView: View {
         }
 
         // Fallback to hardcoded version
-        return "1.0.1"
+        return "1.1.0"
     }
 }
 
@@ -292,7 +362,7 @@ struct SettingsView: View {
 
 struct TipRow: View {
     let icon: String
-    let text: String
+    let text: LocalizedStringKey
 
     var body: some View {
         HStack(alignment: .top, spacing: 12) {

@@ -41,35 +41,79 @@ final class habits_trackerUITests: XCTestCase {
 
     @MainActor
     func testStoreScreenshots() throws {
+        try captureStoreFlow(language: "en", locale: "en_US")
+    }
+
+    @MainActor
+    func testStoreScreenshotsPortuguese() throws {
+        try captureStoreFlow(language: "pt-BR", locale: "pt_BR")
+    }
+
+    @MainActor
+    private func captureStoreFlow(language: String, locale: String) throws {
+        XCUIDevice.shared.orientation = .portrait
         let app = XCUIApplication()
         app.launchArguments += [
             "-StoreScreenshotMode",
-            "-AppleLanguages", "(en)",
-            "-AppleLocale", "en_US"
+            "-AppleLanguages", "(\(language))",
+            "-AppleLocale", locale
         ]
         app.launch()
 
         XCTAssertTrue(app.navigationBars["Vibe Habits"].waitForExistence(timeout: 8))
         sleep(3)
-        captureStoreScreenshot(named: "01-habits")
+        captureStoreScreenshot(named: "\(language)-01-habits")
 
-        let insightsButton = app.buttons["Insights"].firstMatch
+        let insightsButton = app.buttons[language == "pt-BR" ? "Análises" : "Insights"].firstMatch
         XCTAssertTrue(insightsButton.waitForExistence(timeout: 3))
         insightsButton.tap()
-        XCTAssertTrue(app.staticTexts["Insights"].waitForExistence(timeout: 3))
-        captureStoreScreenshot(named: "02-insights")
+        XCTAssertTrue(app.staticTexts[language == "pt-BR" ? "Análises" : "Insights"].waitForExistence(timeout: 3))
+        captureStoreScreenshot(named: "\(language)-02-insights")
 
         app.terminate()
         app.launch()
         XCTAssertTrue(app.navigationBars["Vibe Habits"].waitForExistence(timeout: 8))
         sleep(3)
-        let feedTab = app.tabBars.buttons["Feed"].exists
-            ? app.tabBars.buttons["Feed"]
-            : app.buttons["Feed"].firstMatch
+        let addHabitButton = app.buttons[language == "pt-BR" ? "Adicionar hábito" : "Add habit"]
+        XCTAssertTrue(addHabitButton.waitForExistence(timeout: 3))
+        addHabitButton.tap()
+        let newHabitTitle = language == "pt-BR" ? "Novo hábito" : "New Habit"
+        XCTAssertTrue(app.navigationBars[newHabitTitle].waitForExistence(timeout: 3))
+        let reminderLabel = language == "pt-BR" ? "Lembrar-me" : "Remind me"
+        let reminderToggle = app.switches[reminderLabel]
+        XCTAssertTrue(reminderToggle.waitForExistence(timeout: 3))
+        XCTAssertEqual(reminderToggle.value as? String, "1")
+        app.swipeUp()
+        captureStoreScreenshot(named: "\(language)-03-reminder")
+
+        app.terminate()
+        app.launch()
+        XCTAssertTrue(app.navigationBars["Vibe Habits"].waitForExistence(timeout: 8))
+        sleep(3)
+        let settingsLabel = language == "pt-BR" ? "Ajustes" : "Settings"
+        let settingsTab = app.tabBars.buttons[settingsLabel].exists
+            ? app.tabBars.buttons[settingsLabel]
+            : app.buttons[settingsLabel].firstMatch
+        XCTAssertTrue(settingsTab.waitForExistence(timeout: 3))
+        settingsTab.tap()
+        XCTAssertTrue(app.navigationBars[settingsLabel].waitForExistence(timeout: 3))
+        sleep(1)
+        let exportLabel = language == "pt-BR" ? "Exportar backup" : "Export Backup"
+        XCTAssertTrue(app.buttons[exportLabel].waitForExistence(timeout: 3))
+        captureStoreScreenshot(named: "\(language)-04-private-backup")
+
+        app.terminate()
+        app.launch()
+        XCTAssertTrue(app.navigationBars["Vibe Habits"].waitForExistence(timeout: 8))
+        sleep(3)
+        let feedLabel = language == "pt-BR" ? "Histórico" : "Feed"
+        let feedTab = app.tabBars.buttons[feedLabel].exists
+            ? app.tabBars.buttons[feedLabel]
+            : app.buttons[feedLabel].firstMatch
         XCTAssertTrue(feedTab.waitForExistence(timeout: 3))
         feedTab.tap()
-        XCTAssertTrue(app.navigationBars["Feed"].waitForExistence(timeout: 3))
-        captureStoreScreenshot(named: "03-feed")
+        XCTAssertTrue(app.navigationBars[feedLabel].waitForExistence(timeout: 3))
+        captureStoreScreenshot(named: "\(language)-05-feed")
     }
 
     private func captureStoreScreenshot(named name: String) {

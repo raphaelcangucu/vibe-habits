@@ -15,13 +15,26 @@ final class Habit {
     var frequencyType: FrequencyType
     var targetValue: Double
     var createdAt: Date
+    var reminderEnabled: Bool = false
+    var reminderHour: Int = 8
+    var reminderMinute: Int = 0
 
-    init(name: String, frequencyType: FrequencyType, targetValue: Double) {
+    init(
+        name: String,
+        frequencyType: FrequencyType,
+        targetValue: Double,
+        reminderEnabled: Bool = false,
+        reminderHour: Int = 8,
+        reminderMinute: Int = 0
+    ) {
         self.id = UUID()
         self.name = name
         self.frequencyType = frequencyType
         self.targetValue = targetValue
         self.createdAt = Date()
+        self.reminderEnabled = reminderEnabled
+        self.reminderHour = reminderHour
+        self.reminderMinute = reminderMinute
     }
 
     // Computed properties for display

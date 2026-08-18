@@ -10,13 +10,21 @@ import SwiftData
 
 @main
 struct habits_trackerApp: App {
+    private let isStoreScreenshotMode = ProcessInfo.processInfo.arguments.contains("-StoreScreenshotMode")
+
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
             Habit.self,
             HabitLog.self,
         ])
         let isStoreScreenshotMode = ProcessInfo.processInfo.arguments.contains("-StoreScreenshotMode")
-        let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: isStoreScreenshotMode)
+        let modelConfiguration: ModelConfiguration
+        if isStoreScreenshotMode {
+            modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
+        } else {
+            let storeURL = URL.applicationSupportDirectory.appending(path: "default.store")
+            modelConfiguration = ModelConfiguration(schema: schema, url: storeURL)
+        }
 
         do {
             let container = try ModelContainer(for: schema, configurations: [modelConfiguration])
@@ -29,20 +37,47 @@ struct habits_trackerApp: App {
         }
     }()
 
-    @State private var showSplash = true
-
     var body: some Scene {
         WindowGroup {
-            ZStack {
-                MainTabView()
-                    .opacity(showSplash ? 0 : 1)
-
-                if showSplash {
-                    SplashScreenView(isActive: $showSplash)
-                }
-            }
+            AppRootView(isStoreScreenshotMode: isStoreScreenshotMode)
         }
         .modelContainer(sharedModelContainer)
+    }
+}
+
+private struct AppRootView: View {
+    @Query private var habits: [Habit]
+    @AppStorage("didCompleteOnboarding") private var didCompleteOnboarding = false
+    @State private var showSplash = true
+
+    let isStoreScreenshotMode: Bool
+
+    private var shouldShowOnboarding: Binding<Bool> {
+        Binding(
+            get: { !isStoreScreenshotMode && !didCompleteOnboarding && habits.isEmpty },
+            set: { isPresented in
+                if !isPresented { didCompleteOnboarding = true }
+            }
+        )
+    }
+
+    var body: some View {
+        ZStack {
+            MainTabView()
+                .opacity(showSplash ? 0 : 1)
+
+            if showSplash {
+                SplashScreenView(isActive: $showSplash)
+            }
+        }
+        .onAppear {
+            if !habits.isEmpty {
+                didCompleteOnboarding = true
+            }
+        }
+        .fullScreenCover(isPresented: shouldShowOnboarding) {
+            OnboardingView(isComplete: $didCompleteOnboarding)
+        }
     }
 }
 
@@ -51,15 +86,15 @@ private func seedStoreScreenshotData(in container: ModelContainer) {
     let calendar = Calendar.current
     let today = calendar.startOfDay(for: Date())
 
-    let morningWalk = Habit(name: "Morning Walk", frequencyType: .daily, targetValue: 30)
+    let morningWalk = Habit(name: String(localized: "Morning Walk"), frequencyType: .daily, targetValue: 30)
     morningWalk.createdAt = calendar.date(byAdding: .day, value: -24, to: today) ?? today
     context.insert(morningWalk)
 
-    let reading = Habit(name: "Read Every Day", frequencyType: .daily, targetValue: 20)
+    let reading = Habit(name: String(localized: "Read Every Day"), frequencyType: .daily, targetValue: 20)
     reading.createdAt = calendar.date(byAdding: .day, value: -18, to: today) ?? today
     context.insert(reading)
 
-    let strength = Habit(name: "Strength Training", frequencyType: .timesPerWeek, targetValue: 3)
+    let strength = Habit(name: String(localized: "Strength Training"), frequencyType: .timesPerWeek, targetValue: 3)
     strength.createdAt = calendar.date(byAdding: .day, value: -12, to: today) ?? today
     context.insert(strength)
 
@@ -72,7 +107,7 @@ private func seedStoreScreenshotData(in container: ModelContainer) {
                 date: date,
                 value: Double(24 + (dayOffset % 4) * 3),
                 completed: dayOffset % 3 != 0,
-                note: dayOffset == 0 ? "Fresh air and a strong start to the day." : nil
+                note: dayOffset == 0 ? String(localized: "Fresh air and a strong start to the day.") : nil
             ))
         }
 
@@ -82,7 +117,7 @@ private func seedStoreScreenshotData(in container: ModelContainer) {
                 date: date,
                 value: Double(20 + (dayOffset % 3) * 5),
                 completed: true,
-                note: dayOffset == 1 ? "A few pages before bed." : nil
+                note: dayOffset == 1 ? String(localized: "A few pages before bed.") : nil
             ))
         }
 

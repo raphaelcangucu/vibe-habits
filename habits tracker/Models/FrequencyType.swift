@@ -13,17 +13,24 @@ enum FrequencyType: String, Codable, CaseIterable {
     case hoursPerWeek = "Hours per Week"
 
     var description: String {
-        self.rawValue
+        switch self {
+        case .daily:
+            String(localized: "Daily Goal")
+        case .timesPerWeek:
+            String(localized: "Times per Week")
+        case .hoursPerWeek:
+            String(localized: "Hours per Week")
+        }
     }
 
     var unit: String {
         switch self {
         case .daily:
-            return "per day"
+            return String(localized: "per day")
         case .timesPerWeek:
-            return "times/week"
+            return String(localized: "times/week")
         case .hoursPerWeek:
-            return "hours/week"
+            return String(localized: "hours/week")
         }
     }
 }

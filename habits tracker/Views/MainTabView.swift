@@ -9,6 +9,10 @@ import SwiftUI
 import SwiftData
 
 struct MainTabView: View {
+    @Environment(\.modelContext) private var modelContext
+    @Query private var habits: [Habit]
+    @Query private var logs: [HabitLog]
+
     var body: some View {
         TabView {
             HabitsListView()
@@ -26,6 +30,16 @@ struct MainTabView: View {
                     Label("Settings", systemImage: "gear")
                 }
         }
+        .onAppear(perform: refreshWidget)
+        .onChange(of: habits.count) { _, _ in refreshWidget() }
+        .onChange(of: logs.count) { _, _ in refreshWidget() }
+        .onReceive(NotificationCenter.default.publisher(for: .habitCompleted)) { _ in
+            refreshWidget()
+        }
+    }
+
+    private func refreshWidget() {
+        WidgetSnapshotStore.update(modelContext: modelContext)
     }
 }
 

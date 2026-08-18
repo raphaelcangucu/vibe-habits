@@ -1,1 +1,1 @@
-habit,tracker,routine,goals,streaks,progress,productivity,wellness,reminders,journal
+routine,progress,productivity,wellness,reminders,journal,daily,focus,selfcare,planner,motivation

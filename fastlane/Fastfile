@@ -3,6 +3,7 @@ default_platform(:ios)
 PROJECT_PATH = "habits tracker.xcodeproj"
 SCHEME = "habits tracker"
 APP_IDENTIFIER = ENV.fetch("APP_IDENTIFIER", "app.vibehabits.ios")
+APP_EXTENSION_IDENTIFIER = ENV.fetch("APP_EXTENSION_IDENTIFIER", "app.vibehabits.ios.widget")
 APPLE_TEAM_ID = ENV.fetch("APPLE_TEAM_ID", "SB6QYUH97U")
 
 def release_version_from_tag
@@ -70,7 +71,7 @@ platform :ios do
 
     match_options = {
       type: "appstore",
-      app_identifier: APP_IDENTIFIER,
+      app_identifier: [APP_IDENTIFIER, APP_EXTENSION_IDENTIFIER],
       team_id: APPLE_TEAM_ID,
       git_url: ENV.fetch("MATCH_GIT_URL"),
       git_branch: ENV.fetch("MATCH_GIT_BRANCH", "main"),
@@ -91,13 +92,13 @@ platform :ios do
   lane :store_listing do
     upload_to_app_store(
       api_key: app_store_connect_key,
-      app_version: ENV.fetch("APP_STORE_VERSION", "1.0.6"),
+      app_version: ENV.fetch("APP_STORE_VERSION", "1.1.0"),
       metadata_path: "fastlane/metadata",
       screenshots_path: "fastlane/screenshots",
       skip_binary_upload: true,
       skip_metadata: ENV["SKIP_STORE_METADATA"] == "true",
       skip_app_version_update: false,
-      overwrite_screenshots: false,
+      overwrite_screenshots: true,
       sync_screenshots: true,
       submit_for_review: false,
       automatic_release: false,
@@ -127,12 +128,12 @@ platform :ios do
         "MARKETING_VERSION=#{version}",
         "CURRENT_PROJECT_VERSION=#{build_number}",
         "CODE_SIGN_STYLE=Manual",
-        "CODE_SIGN_IDENTITY='Apple Distribution'",
-        "PROVISIONING_PROFILE_SPECIFIER='match AppStore #{APP_IDENTIFIER}'"
+        "CODE_SIGN_IDENTITY='Apple Distribution'"
       ].join(" "),
       export_options: {
         provisioningProfiles: {
-          APP_IDENTIFIER => "match AppStore #{APP_IDENTIFIER}"
+          APP_IDENTIFIER => "match AppStore #{APP_IDENTIFIER}",
+          APP_EXTENSION_IDENTIFIER => "match AppStore #{APP_EXTENSION_IDENTIFIER}"
         }
       }
     )

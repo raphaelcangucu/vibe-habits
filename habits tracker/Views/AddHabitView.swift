@@ -15,6 +15,23 @@ struct AddHabitView: View {
     @State private var habitName = ""
     @State private var selectedFrequency: FrequencyType = .daily
     @State private var targetValue = ""
+    @State private var reminderEnabled = false
+    @State private var reminderTime: Date
+
+    init(store: HabitStore) {
+        self.store = store
+
+        let screenshotMode = ProcessInfo.processInfo.arguments.contains("-StoreScreenshotMode")
+        _habitName = State(initialValue: screenshotMode ? String(localized: "Read before bed") : "")
+        _targetValue = State(initialValue: screenshotMode ? "20" : "")
+        _reminderEnabled = State(initialValue: screenshotMode)
+        _reminderTime = State(initialValue: Calendar.current.date(
+            bySettingHour: 8,
+            minute: 0,
+            second: 0,
+            of: Date()
+        ) ?? Date())
+    }
 
     var body: some View {
         NavigationStack {
@@ -43,6 +60,22 @@ struct AddHabitView: View {
                         .keyboardType(.decimalPad)
                 } header: {
                     Text(labelForFrequency)
+                }
+
+                Section {
+                    Toggle("Remind me", isOn: $reminderEnabled)
+
+                    if reminderEnabled {
+                        DatePicker(
+                            "Reminder time",
+                            selection: $reminderTime,
+                            displayedComponents: .hourAndMinute
+                        )
+                    }
+                } header: {
+                    Text("Reminder")
+                } footer: {
+                    Text("You can change this reminder at any time.")
                 }
 
                 Section {
@@ -89,11 +122,11 @@ struct AddHabitView: View {
     private var labelForFrequency: String {
         switch selectedFrequency {
         case .daily:
-            return "Daily Target"
+            return String(localized: "Daily Target")
         case .timesPerWeek:
-            return "Times per Week"
+            return String(localized: "Times per Week")
         case .hoursPerWeek:
-            return "Hours per Week"
+            return String(localized: "Hours per Week")
         }
     }
 
@@ -110,7 +143,22 @@ struct AddHabitView: View {
 
     private func createHabit() {
         guard let value = Double(targetValue) else { return }
-        store.addHabit(name: habitName, frequencyType: selectedFrequency, targetValue: value)
+        let components = Calendar.current.dateComponents([.hour, .minute], from: reminderTime)
+        let habit = store.addHabit(
+            name: habitName,
+            frequencyType: selectedFrequency,
+            targetValue: value,
+            reminderEnabled: reminderEnabled,
+            reminderHour: components.hour ?? 8,
+            reminderMinute: components.minute ?? 0
+        )
+
+        if reminderEnabled {
+            Task {
+                await NotificationManager.shared.requestAuthorization()
+                await NotificationManager.shared.scheduleReminder(for: habit)
+            }
+        }
         dismiss()
     }
 }
@@ -153,7 +201,7 @@ struct FrequencyCard: View {
 
 struct ExampleRow: View {
     let icon: String
-    let text: String
+    let text: LocalizedStringKey
 
     var body: some View {
         HStack(spacing: 12) {

@@ -6,7 +6,7 @@ Vibe Habits is designed to work without an account and without collecting person
 
 ## Data storage
 
-Habit names, goals, progress logs, reminder preferences, and any photos you attach to a log are stored locally on your device. Vibe Habits does not transmit this information to the developer or to third parties.
+Habit names, goals, progress logs, reminder preferences, and any photos you attach to a log are stored locally on your device. Backup files are created only when you choose Export Backup and remain wherever you choose to save them. Vibe Habits does not transmit this information to the developer or to third parties.
 
 ## Camera, photo library, and notifications
 
@@ -18,7 +18,7 @@ Vibe Habits does not include advertising, analytics, or tracking SDKs. It does n
 
 ## Data deletion
 
-You can delete individual habit data inside the app. Removing the app from your device deletes the app's remaining locally stored data according to iOS behavior.
+You can delete individual habit data inside the app. Removing the app from your device deletes the app's remaining locally stored data according to iOS behavior. Exported backups remain in the location you selected until you delete them there.
 
 ## Changes
 
@@ -38,7 +38,7 @@ O Vibe Habits foi desenvolvido para funcionar sem conta e sem coletar dados pess
 
 ## Armazenamento de dados
 
-Nomes de hábitos, metas, registros de progresso, preferências de lembretes e fotos anexadas aos registros ficam armazenados localmente no seu dispositivo. O Vibe Habits não transmite essas informações ao desenvolvedor nem a terceiros.
+Nomes de hábitos, metas, registros de progresso, preferências de lembretes e fotos anexadas aos registros ficam armazenados localmente no seu dispositivo. Arquivos de backup são criados somente quando você escolhe Exportar backup e permanecem no local que você selecionar. O Vibe Habits não transmite essas informações ao desenvolvedor nem a terceiros.
 
 ## Câmera, fotos e notificações
 
@@ -50,7 +50,7 @@ O Vibe Habits não inclui SDKs de publicidade, análise ou rastreamento. O app n
 
 ## Exclusão de dados
 
-Você pode apagar dados de hábitos dentro do app. Ao remover o app do dispositivo, os demais dados armazenados localmente são apagados conforme o comportamento do iOS.
+Você pode apagar dados de hábitos dentro do app. Ao remover o app do dispositivo, os demais dados armazenados localmente são apagados conforme o comportamento do iOS. Backups exportados permanecem no local escolhido até que você os exclua ali.
 
 ## Alterações
 

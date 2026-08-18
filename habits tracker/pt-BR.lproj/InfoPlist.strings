@@ -1,0 +1,3 @@
+"CFBundleDisplayName" = "Vibe Habits";
+"NSCameraUsageDescription" = "O Vibe Habits usa a câmera somente quando você decide adicionar uma foto ao registro de um hábito.";
+"NSPhotoLibraryUsageDescription" = "O Vibe Habits acessa sua biblioteca somente quando você decide adicionar uma foto ao registro de um hábito.";

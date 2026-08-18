@@ -8,7 +8,7 @@ token = Spaceship::ConnectAPI::Token.create(
 Spaceship::ConnectAPI.token = token
 
 bundle_id = ENV.fetch("APP_IDENTIFIER", "app.vibehabits.ios")
-version_string = ENV.fetch("APP_STORE_VERSION", "1.0.6")
+version_string = ENV.fetch("APP_STORE_VERSION", "1.1.0")
 app = Spaceship::ConnectAPI::App.find(bundle_id)
 raise "App #{bundle_id} was not found" unless app
 

@@ -1,0 +1,20 @@
+Crie consistência um dia de cada vez com o Vibe Habits, um rastreador de hábitos privado e objetivo para iPhone e iPad.
+
+COMECE COM RITMO
+Escolha um modelo pronto ou crie uma meta que combine com você:
+• Defina metas diárias
+• Acompanhe objetivos por vezes na semana
+• Registre horas por semana
+• Adicione um lembrete pessoal a cada hábito
+
+VEJA SEU PROGRESSO
+• Acompanhamento semanal claro
+• Sequências visuais e histórico de conclusões
+• Análises semanais, mensais e anuais
+• Notas e fotos opcionais para momentos importantes
+• Widgets na Tela de Início para acompanhar o ritmo de hoje
+
+SEUS DADOS, SUAS ESCOLHAS
+Exporte um backup portátil em JSON quando quiser e restaure-o no seu dispositivo.
+
+Seus hábitos pertencem a você. O Vibe Habits funciona sem conta, armazena as informações no dispositivo e não contém publicidade, análise ou rastreamento.

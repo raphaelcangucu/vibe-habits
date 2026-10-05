@@ -192,6 +192,8 @@ platform :ios do
     else
       upload_to_testflight(
         api_key: api_key,
+        distribute_external: false,
+        notify_external_testers: false,
         skip_waiting_for_build_processing: true
       )
 

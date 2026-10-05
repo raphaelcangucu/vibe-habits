@@ -18,7 +18,7 @@ O projeto está configurado com:
 - Categoria principal: Productivity
 - Categoria secundária: Health & Fitness
 - Versão derivada da tag, por exemplo `v1.0.6` vira `1.0.6`
-- Build derivado de `GITHUB_RUN_NUMBER.GITHUB_RUN_ATTEMPT`
+- Build derivado do horário UTC (`YYYYMMDDHHmm`), igual no CI e nas execuções locais
 
 ## 2. Preparação única na Apple
 
@@ -84,7 +84,7 @@ O workflow `.github/workflows/ios-release.yml` irá:
 5. enviar o `.ipa` ao App Store Connect/TestFlight;
 6. criar ou atualizar a versão da App Store com os metadados e screenshots versionados no repositório.
 
-Tags como `release-1.0.2` ou `v1.0` falham de propósito. Em uma reexecução, o sufixo `GITHUB_RUN_ATTEMPT` produz um novo número de build.
+Tags como `release-1.0.2` ou `v1.0` falham de propósito. Os envios do aplicativo são serializados entre branches. Uma reexecução usa o horário UTC atual; confirme que seu número de build é maior que qualquer envio anterior na mesma versão.
 
 ## 6. Completar a primeira ficha da App Store
 

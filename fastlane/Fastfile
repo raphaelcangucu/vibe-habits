@@ -17,11 +17,7 @@ def release_version_from_tag
 end
 
 def release_build_number
-  if ENV["GITHUB_RUN_NUMBER"]
-    "#{ENV.fetch("GITHUB_RUN_NUMBER")}.#{ENV.fetch("GITHUB_RUN_ATTEMPT", "1")}"
-  else
-    Time.now.utc.strftime("%Y%m%d%H%M")
-  end
+  Time.now.utc.strftime("%Y%m%d%H%M")
 end
 
 platform :ios do

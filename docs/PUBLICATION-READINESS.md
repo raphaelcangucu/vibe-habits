@@ -1,6 +1,6 @@
 # Vibe Habits — preparação de publicação
 
-Avaliação: 5 de outubro de 2026. **Preparação local concluída; publicação bloqueada por contrato Apple obrigatório pendente ou expirado.**
+Avaliação: 5 de outubro de 2026. **Preparação local concluída; acesso à API Apple liberado após o aceite do contrato. Há pendências não resolvidas em uma revisão existente.**
 
 ## Aplicativo localizado
 
@@ -21,7 +21,7 @@ Projeto `raphaelcangucu/vibe-habits`, app nativo SwiftUI/SwiftData. Nome existen
 | Ficha | Português e inglês; campos de texto conferidos nos limites Apple |
 | Suporte e privacidade | URLs públicas retornam HTTP 200 e são acessíveis pelo app |
 | Fastlane / CI | Consulta somente leitura, atualização da ficha e submissão separadas; lançamento manual |
-| Publicação remota | Não realizada nesta rodada; bloqueada pelo contrato Apple |
+| Publicação remota | Não realizada nesta rodada; revisão existente em UNRESOLVED_ISSUES |
 
 O manifesto anterior declarava CA92.1, embora o código use UserDefaults(suiteName:) para compartilhar o snapshot com o widget. Foi corrigido para 1C8F.1 em ambos os bundles, de acordo com a [definição oficial Apple](https://developer.apple.com/documentation/bundleresources/app-privacy-configuration/nsprivacyaccessedapitypes/nsprivacyaccessedapitype). O manifesto corrigido foi conferido dentro do IPA exportado. Não foram alteradas telas ou funcionalidades do app.
 
@@ -36,13 +36,15 @@ No GitHub Actions, o acionamento manual usa audit_only=true por padrão. Para at
 
 Referências: [Fastlane](https://docs.fastlane.tools/actions/upload_to_app_store/), [submissão Apple](https://developer.apple.com/help/app-store-connect/manage-submissions-to-app-review/submit-an-app), [dimensões de screenshots](https://developer.apple.com/help/app-store-connect/reference/app-information/screenshot-specifications/).
 
-## Bloqueio comprovado e próximo passo
+## Histórico do contrato e próximo passo
 
 A consulta autenticada com os secrets já existentes retornou HTTP 403 e o código **FORBIDDEN.REQUIRED_AGREEMENTS_MISSING_OR_EXPIRED**. A mensagem Apple informa que a operação exige um contrato vigente, ainda não assinado ou expirado. Evidência: [execução de auditoria](https://github.com/raphaelcangucu/vibe-habits/actions/runs/37341753616). O mesmo run passou na validação da política e não executou os passos de upload ou submissão.
 
-O titular precisa revisar e, se concordar, aceitar o contrato pendente em [App Store Connect — Agreements](https://appstoreconnect.apple.com/agreements) ou no [Apple Developer Account](https://developer.apple.com/account/). A aceitação é ação do titular; nenhuma chave foi revogada ou recriada.
+O titular informou ter aceitado o contrato. O acesso foi liberado na consulta de 05/10/2026 às 16:43 UTC: app e versões foram lidos, e a execução avançou até a listagem de builds. Nenhuma chave foi revogada ou recriada.
 
-Depois do aceite, repetir `publication_status` para conferir a situação atual. O último estado remoto conhecido, de agosto, indicava uma submissão em andamento; ele não prova o estado atual. Não retirar ou duplicar essa submissão sem inspecioná-la. Conferir também App Privacy, disponibilidade/preço e status de comerciante para a União Europeia. Definir a versão final com base na situação atual antes de enviar o novo build. O IPA local 1.1.0 é candidato preparado, não um build já selecionado/processado na Apple.
+A [consulta completa de 05/10/2026 às 16:46 UTC](https://github.com/raphaelcangucu/vibe-habits/actions/runs/37343268970) passou e comprovou: versão 1.1.0 em PREPARE_FOR_SUBMISSION, lançamento MANUAL, build 6.1 selecionado e VALID. A submissão existente está em UNRESOLVED_ISSUES. Os dois idiomas têm descrição e URL de suporte; cada idioma tem 10 screenshots de iPhone e 10 de iPad, todos COMPLETE. Os 20 screenshots locais preparados não foram enviados nesta rodada e não substituem os 40 arquivos já existentes na Apple.
+
+Antes de reenviar, ler a mensagem em App Review e corrigir suas pendências. Não retirar ou duplicar a submissão sem inspecioná-la. A política Fastlane bloqueia esse reenvio enquanto houver UNRESOLVED_ISSUES. Conferir também App Privacy, disponibilidade/preço e status de comerciante para a União Europeia. O IPA local 1.1.0 com o manifesto corrigido é candidato preparado; ele ainda não foi enviado, processado ou selecionado na Apple. O build 6.1 remoto é anterior à correção local.
 
 ## Evidências locais
 
@@ -50,6 +52,10 @@ Em artifacts/publication/ (ignorado pelo Git): ipa-validation.json, local-assets
 
 ## Atualização após aceite informado pelo titular
 
-O titular informou ter aceitado o contrato. A consulta posterior, em 05/10/2026 às 16:40 UTC, ainda retornou FORBIDDEN.REQUIRED_AGREEMENTS_MISSING_OR_EXPIRED: [execução após o aceite](https://github.com/raphaelcangucu/vibe-habits/actions/runs/37342555263). A sessão disponível do App Store Connect aqui está na tela de login, impedindo conferir conta/contrato pela interface. É preciso conferir o contrato na conta pessoal SB6QYUH97U ou aguardar sua atualização na API; não se presume que o titular deixou de aceitá-lo.
+O primeiro acesso posterior, às 16:40 UTC, ainda retornou FORBIDDEN.REQUIRED_AGREEMENTS_MISSING_OR_EXPIRED. Às 16:43 UTC, o [segundo acesso após o aceite](https://github.com/raphaelcangucu/vibe-habits/actions/runs/37342928556) leu o app e suas versões. A listagem de builds retornou 400 porque a relação /apps/{id}/builds não aceita include; o verificador passou a usar /v1/builds com filtro de app, inclusão de preReleaseVersion e ordenação por data de upload. A nova consulta permanece somente leitura. O contrato não é mais o bloqueio observado.
+
+O relatório completo está em artifacts/publication/app-store-status.json. A [consulta dos itens às 16:48 UTC](https://github.com/raphaelcangucu/vibe-habits/actions/runs/37343513463) passou e confirmou que o item REJECTED pertence à versão 1.1.0. A sessão do App Store Connect disponível aqui permanece na tela de login; a mensagem que explica essa rejeição ainda não foi lida. Nenhuma correção de privacidade foi presumida como solução para uma rejeição cujo motivo ainda é desconhecido.
 
 O acionamento manual de build também foi corrigido para usar a versão solicitada como RELEASE_TAG, em vez de tratar o nome da branch como uma tag. A concorrência agora é serializada por aplicativo entre branches, preservando envios sequenciais.
+
+A numeração de builds usa o mesmo relógio UTC (YYYYMMDDHHmm) localmente e no CI, evitando alternar entre números como 6.1 e os timestamps já usados no projeto. O próximo upload deve ter número maior que o selecionado e que qualquer candidato previamente enviado na mesma versão.

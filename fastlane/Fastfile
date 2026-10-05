@@ -7,7 +7,7 @@ APP_EXTENSION_IDENTIFIER = ENV.fetch("APP_EXTENSION_IDENTIFIER", "app.vibehabits
 APPLE_TEAM_ID = ENV.fetch("APPLE_TEAM_ID", "SB6QYUH97U")
 
 def release_version_from_tag
-  tag = ENV["GITHUB_REF_NAME"] || ENV["RELEASE_TAG"]
+  tag = ENV["RELEASE_TAG"] || ENV["GITHUB_REF_NAME"]
   UI.user_error!("Set RELEASE_TAG (for example, v1.0.2) when running locally") if tag.to_s.empty?
 
   match = tag.match(/\Av(\d+\.\d+\.\d+)\z/)

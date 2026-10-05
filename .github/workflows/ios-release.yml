@@ -31,7 +31,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: ios-release-${{ github.ref }}
+  group: ios-release-app.vibehabits.ios
   cancel-in-progress: false
 
 jobs:
@@ -91,7 +91,13 @@ jobs:
 
       - name: Test, archive, and upload
         if: github.event_name == 'push' || (inputs.audit_only == false && inputs.listing_only == false)
-        run: bundle exec fastlane ios release
+        env:
+          REQUESTED_APP_STORE_VERSION: ${{ inputs.app_store_version }}
+        run: |
+          if [[ "$GITHUB_EVENT_NAME" == "workflow_dispatch" ]]; then
+            export RELEASE_TAG="v${REQUESTED_APP_STORE_VERSION}"
+          fi
+          bundle exec fastlane ios release
 
       - name: Read current App Store publication status
         if: github.event_name == 'workflow_dispatch' && inputs.audit_only == true

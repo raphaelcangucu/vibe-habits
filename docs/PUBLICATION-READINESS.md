@@ -47,3 +47,9 @@ Depois do aceite, repetir `publication_status` para conferir a situação atual.
 ## Evidências locais
 
 Em artifacts/publication/ (ignorado pelo Git): ipa-validation.json, local-assets-and-signing.json, archive.log, export.log, unit-tests.log, review-policy-tests.log e audit-final.log. O SHA-256 do IPA está em ipa-validation.json. Código e documentação estão na branch codex/publication-readiness. As mudanças precisam ser integradas à main para que o fluxo seja o padrão definitivo do projeto.
+
+## Atualização após aceite informado pelo titular
+
+O titular informou ter aceitado o contrato. A consulta posterior, em 05/10/2026 às 16:40 UTC, ainda retornou FORBIDDEN.REQUIRED_AGREEMENTS_MISSING_OR_EXPIRED: [execução após o aceite](https://github.com/raphaelcangucu/vibe-habits/actions/runs/37342555263). A sessão disponível do App Store Connect aqui está na tela de login, impedindo conferir conta/contrato pela interface. É preciso conferir o contrato na conta pessoal SB6QYUH97U ou aguardar sua atualização na API; não se presume que o titular deixou de aceitá-lo.
+
+O acionamento manual de build também foi corrigido para usar a versão solicitada como RELEASE_TAG, em vez de tratar o nome da branch como uma tag. A concorrência agora é serializada por aplicativo entre branches, preservando envios sequenciais.

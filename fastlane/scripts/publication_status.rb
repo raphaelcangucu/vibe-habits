@@ -33,7 +33,7 @@ module PublicationStatus
     app = get("/v1/apps/#{app_id}").fetch("data")
     raise "App identity does not match #{expected_bundle}" unless app.dig("attributes", "bundleId") == expected_bundle
     versions = get("/v1/apps/#{app_id}/appStoreVersions?filter%5Bplatform%5D=IOS&limit=50").fetch("data")
-    builds_data = get("/v1/apps/#{app_id}/builds?limit=10&include=preReleaseVersion")
+    builds_data = get("/v1/builds?filter%5Bapp%5D=#{app_id}&limit=10&sort=-uploadedDate&include=preReleaseVersion")
     trains = builds_data.fetch("included", []).to_h { |item| [item["id"], item.dig("attributes", "version")] }
     builds = builds_data.fetch("data").map do |build|
       attrs = build.fetch("attributes")

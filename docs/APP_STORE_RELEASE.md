@@ -1,6 +1,6 @@
 # Publicação do Vibe Habits na App Store
 
-Este projeto envia toda nova tag semântica (`vMAJOR.MINOR.PATCH`) ao App Store Connect/TestFlight usando Fastlane e GitHub Actions. O mesmo workflow também sincroniza a ficha e substitui os screenshots da versão correspondente. A submissão à análise e a liberação pública permanecem manuais no App Store Connect, o que evita publicar uma versão acidentalmente antes de revisar as respostas legais.
+Este projeto envia toda nova tag semântica (`vMAJOR.MINOR.PATCH`) ao App Store Connect/TestFlight usando Fastlane e GitHub Actions. O mesmo workflow também sincroniza a ficha e substitui os screenshots da versão correspondente. No acionamento manual, `audit_only=true` é o padrão e apenas consulta o estado real da Apple. A submissão à análise e a liberação pública permanecem manuais no App Store Connect, o que evita publicar uma versão acidentalmente antes de revisar as respostas legais.
 
 ## 1. Confirmar a identidade do app
 
@@ -122,3 +122,27 @@ Para validar localmente testes, assinatura, archive e exportação sem enviar o 
 ```sh
 RELEASE_TAG=v1.1.0 SKIP_UPLOAD=true bundle exec fastlane ios release
 ```
+
+## 8. Consulta de estado e submissão separada (outubro de 2026)
+
+A automação segue a estrutura do Civitas: envio ao TestFlight e submissão à App Store são passos separados; a liberação pública permanece manual. As chaves da conta pessoal SB6QYUH97U já configuradas neste repositório são preservadas. Nenhuma chave do time corporativo Civitas é copiada.
+
+Para consultar versões, build selecionado, processamento, screenshots por idioma/dispositivo e submissões sem alterar a Apple:
+
+```sh
+bundle exec fastlane ios publication_status
+```
+
+O resultado é salvo em `artifacts/publication/app-store-status.json` (ignorado pelo Git), sem token, chave ou dados de contato do revisor. O GitHub Actions pode executar a mesma consulta com os secrets existentes: acione **iOS release**, mantenha `audit_only=true` e baixe o artifact `app-store-status-*`.
+
+Para sincronizar somente materiais, escolha `audit_only=false`, `listing_only=true` e `submit_for_review=false`. `store_listing` nunca submete a versão. Para enviar uma versão já preparada à análise, escolha `audit_only=false`, `listing_only=true` e `submit_for_review=true`, ou execute:
+
+```sh
+APP_STORE_VERSION=1.1.0 bundle exec fastlane ios app_store_review
+```
+
+Essa lane usa o build já selecionado na Apple e não reenvia screenshots ou binários. Um build solicitado por `APP_STORE_BUILD_NUMBER` deve ser igual ao selecionado. Builds sem processamento VALID ou versões rejeitadas/com pendências são bloqueados. Se a versão já está em análise ou aprovada, a ação termina informando esse estado, sem criar submissão duplicada. A verificação de compras internas fica excluída porque o app não tem IAP e esse precheck não funciona com a chave de API.
+
+Os seis testes de decisão de submissão devem passar antes de operar a publicação. A consulta remota não substitui a conferência das declarações App Privacy, contratos e status de comerciante na interface Apple. Rejeições exigem ler a mensagem e resolver o motivo antes de qualquer novo envio.
+
+Fontes: [Fastlane upload_to_app_store](https://docs.fastlane.tools/actions/upload_to_app_store/), [submeter um app](https://developer.apple.com/help/app-store-connect/manage-submissions-to-app-review/submit-an-app), [estado das submissões via API](https://developer.apple.com/documentation/appstoreconnectapi/get-v1-apps-_id_-reviewsubmissions).

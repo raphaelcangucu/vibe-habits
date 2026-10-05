@@ -65,6 +65,12 @@ jobs:
         with:
           bundler-cache: true
 
+      - name: Validate publication policy
+        run: |
+          ruby -c fastlane/Fastfile
+          ruby -c fastlane/scripts/publication_status.rb
+          ruby fastlane/scripts/review_policy_test.rb
+
       - name: Configure read-only Match access
         if: github.event_name == 'push' || (inputs.audit_only == false && inputs.listing_only == false)
         env:

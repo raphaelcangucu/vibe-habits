@@ -14,7 +14,10 @@ module PublicationStatus
     request = Net::HTTP::Get.new(uri)
     request["Authorization"] = "Bearer #{@token.text}"
     response = Net::HTTP.start(uri.host, uri.port, use_ssl: true, open_timeout: 20, read_timeout: 60) { |http| http.request(request) }
-    raise "Apple GET #{uri.path} returned #{response.code}" unless response.is_a?(Net::HTTPSuccess)
+    unless response.is_a?(Net::HTTPSuccess)
+      errors = JSON.parse(response.body).fetch("errors", []).map { |item| [item["code"], item["title"], item["detail"]].compact.join(": ") }
+      raise "Apple GET #{uri.path} returned #{response.code}: #{errors.join('; ')}"
+    end
     JSON.parse(response.body)
   end
 

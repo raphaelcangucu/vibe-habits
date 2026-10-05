@@ -54,7 +54,17 @@ module PublicationStatus
       { id: version["id"], version: attrs["versionString"], state: attrs["appVersionState"], release_type: attrs["releaseType"], build_number: selected_build&.dig("attributes", "version"), build_processing: selected_build&.dig("attributes", "processingState"), localizations: locales }
     end
     submissions = get("/v1/apps/#{app_id}/reviewSubmissions?limit=200").fetch("data").map do |item|
-      { id: item["id"], state: item.dig("attributes", "state"), platform: item.dig("attributes", "platform") }
+      review_items = get("/v1/reviewSubmissions/#{item['id']}/items?limit=200&include=appStoreVersion")
+      included_versions = review_items.fetch("included", []).to_h { |resource| [resource["id"], resource.dig("attributes", "versionString")] }
+      items = review_items.fetch("data").map do |review_item|
+        relationships = review_item.fetch("relationships", {}).filter_map do |type, relationship|
+          resource = relationship["data"]
+          next unless resource.is_a?(Hash)
+          { type: type, id: resource["id"], version: included_versions[resource["id"]] }
+        end
+        { id: review_item["id"], state: review_item.dig("attributes", "state"), resources: relationships }
+      end
+      { id: item["id"], state: item.dig("attributes", "state"), platform: item.dig("attributes", "platform"), items: items }
     end
     { assessed_at: Time.now.utc.iso8601, app: { id: app_id, name: app.dig("attributes", "name"), bundle_id: expected_bundle }, versions: store_versions, recent_builds: builds, review_submissions: submissions, manual_checks: ["Current App Privacy declarations", "Developer agreements and EU trader status", "App Review messages if the version was rejected"] }
   end

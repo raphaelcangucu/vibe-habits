@@ -4,6 +4,7 @@ require "json"
 require "net/http"
 require "uri"
 require "fileutils"
+require "time"
 
 module PublicationStatus
   module_function
@@ -58,7 +59,7 @@ module PublicationStatus
   def write_report
     require "time"
     report = inventory
-    directory = ENV.fetch("PUBLICATION_REPORT_DIR", "artifacts/publication")
+    directory = ENV.fetch("PUBLICATION_REPORT_DIR", File.expand_path("../../artifacts/publication", __dir__))
     FileUtils.mkdir_p(directory)
     File.write(File.join(directory, "app-store-status.json"), JSON.pretty_generate(report) + "\n")
     puts "App Store status saved for #{report[:app][:name]} (#{report[:app][:bundle_id]})"

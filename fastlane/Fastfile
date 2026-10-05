@@ -90,13 +90,11 @@ platform :ios do
 
   desc "Read the real App Store version, build, screenshots, and review status"
   lane :publication_status do
-    sh("bundle", "exec", "ruby", "fastlane/scripts/publication_status.rb")
+    sh("bundle", "exec", "ruby", "scripts/publication_status.rb")
   end
 
   desc "Upload the reviewed App Store listing and screenshots without a binary"
   lane :store_listing do
-    submit_for_review = ENV["SUBMIT_FOR_REVIEW"] == "true"
-
     upload_to_app_store(
       api_key: app_store_connect_key,
       app_version: ENV.fetch("APP_STORE_VERSION", "1.1.0"),
@@ -106,16 +104,56 @@ platform :ios do
       skip_metadata: ENV["SKIP_STORE_METADATA"] == "true",
       skip_app_version_update: false,
       overwrite_screenshots: true,
-      submit_for_review: submit_for_review,
+      submit_for_review: false,
       automatic_release: false,
       force: true,
-      run_precheck_before_submit: submit_for_review,
+      run_precheck_before_submit: false,
       precheck_include_in_app_purchases: false,
       submission_information: {
         export_compliance_uses_encryption: false,
         content_rights_contains_third_party_content: false
       }
     )
+  end
+
+  desc "Submit the selected processed build for review, preserving manual release"
+  lane :app_store_review do
+    require_relative "scripts/publication_status"
+    require_relative "scripts/review_policy"
+    api_key = app_store_connect_key
+    version_string = ENV.fetch("APP_STORE_VERSION", "1.1.0")
+    report = PublicationStatus.inventory
+    version = report[:versions].find { |item| item[:version] == version_string }
+    UI.user_error!("App Store version #{version_string} was not found") unless version
+    action = ReviewPolicy.decision(version, report[:review_submissions])
+    if action == :already_submitted
+      UI.success("#{version_string} is already submitted or approved; no duplicate submission was created")
+    elsif action == :blocked
+      UI.user_error!("Resolve App Review issues and select a VALID build in a prepared version before submission")
+    else
+      requested_build = ENV["APP_STORE_BUILD_NUMBER"]
+      if !requested_build.to_s.empty? && requested_build != version[:build_number]
+        UI.user_error!("Selected build #{version[:build_number]} does not match requested build #{requested_build}")
+      end
+      upload_to_app_store(
+        api_key: api_key,
+        app_identifier: APP_IDENTIFIER,
+        app_version: version_string,
+        build_number: version[:build_number],
+        skip_binary_upload: true,
+        skip_metadata: true,
+        skip_screenshots: true,
+        submit_for_review: true,
+        automatic_release: false,
+        force: true,
+        run_precheck_before_submit: true,
+        precheck_include_in_app_purchases: false,
+        submission_information: {
+          export_compliance_uses_encryption: false,
+          content_rights_contains_third_party_content: false
+        }
+      )
+    end
   end
 
   desc "Test, archive, sign, and upload a tagged build to App Store Connect/TestFlight"

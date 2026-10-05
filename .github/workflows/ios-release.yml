@@ -101,7 +101,7 @@ jobs:
           retention-days: 14
 
       - name: Upload App Store metadata and screenshots
-        if: github.event_name == 'push' || inputs.audit_only == false
+        if: github.event_name == 'push' || (inputs.audit_only == false && inputs.submit_for_review == false)
         env:
           REQUESTED_APP_STORE_VERSION: ${{ inputs.app_store_version }}
           SUBMIT_FOR_REVIEW: ${{ inputs.submit_for_review }}
@@ -112,6 +112,12 @@ jobs:
             app_store_version="${GITHUB_REF_NAME#v}"
           fi
           APP_STORE_VERSION="$app_store_version" bundle exec fastlane ios store_listing
+
+      - name: Submit the existing selected build for manual App Store release
+        if: github.event_name == 'workflow_dispatch' && inputs.audit_only == false && inputs.submit_for_review == true
+        env:
+          APP_STORE_VERSION: ${{ inputs.app_store_version }}
+        run: bundle exec fastlane ios app_store_review
 
       - name: Upload build logs when the release fails
         if: failure()

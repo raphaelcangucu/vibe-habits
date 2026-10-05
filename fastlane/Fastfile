@@ -88,6 +88,11 @@ platform :ios do
     sync_app_store_signing(api_key: app_store_connect_key)
   end
 
+  desc "Read the real App Store version, build, screenshots, and review status"
+  lane :publication_status do
+    sh("bundle", "exec", "ruby", "fastlane/scripts/publication_status.rb")
+  end
+
   desc "Upload the reviewed App Store listing and screenshots without a binary"
   lane :store_listing do
     submit_for_review = ENV["SUBMIT_FOR_REVIEW"] == "true"

@@ -1,6 +1,6 @@
 # Publicação do Vibe Habits na App Store
 
-Este projeto envia toda nova tag semântica (`vMAJOR.MINOR.PATCH`) ao App Store Connect/TestFlight usando Fastlane e GitHub Actions. O mesmo workflow também sincroniza a ficha e substitui os screenshots da versão correspondente. A submissão à análise e a liberação pública permanecem manuais no App Store Connect, o que evita publicar uma versão acidentalmente antes de revisar as respostas legais.
+Este projeto envia toda nova tag semântica (`vMAJOR.MINOR.PATCH`) ao App Store Connect/TestFlight usando Fastlane e GitHub Actions. O mesmo workflow também sincroniza a ficha e substitui os screenshots da versão correspondente. No acionamento manual, `audit_only=true` é o padrão e apenas consulta o estado real da Apple. A submissão à análise e a liberação pública permanecem manuais no App Store Connect, o que evita publicar uma versão acidentalmente antes de revisar as respostas legais.
 
 ## 1. Confirmar a identidade do app
 
@@ -18,7 +18,7 @@ O projeto está configurado com:
 - Categoria principal: Productivity
 - Categoria secundária: Health & Fitness
 - Versão derivada da tag, por exemplo `v1.0.6` vira `1.0.6`
-- Build derivado de `GITHUB_RUN_NUMBER.GITHUB_RUN_ATTEMPT`
+- Build derivado do horário UTC (`YYYYMMDDHHmm`), igual no CI e nas execuções locais
 
 ## 2. Preparação única na Apple
 
@@ -37,7 +37,14 @@ bundle install
 cp .env.example .env
 ```
 
-Preencha `.env` sem commitá-lo. Para converter a chave `.p8` em Base64 no macOS:
+Preencha `.env` sem commitá-lo. Em execução local, prefira apontar diretamente para a chave fora do repositório:
+
+```sh
+chmod 600 /caminho/para/AuthKey_XXXXXXXXXX.p8
+APP_STORE_CONNECT_KEY_PATH=/caminho/para/AuthKey_XXXXXXXXXX.p8
+```
+
+Defina esse caminho em `.env` como `APP_STORE_CONNECT_KEY_PATH`. O Fastlane recusa uma chave dentro do projeto ou com permissões mais abertas. O Base64 permanece disponível somente como alternativa para o GitHub Actions:
 
 ```sh
 base64 -i /caminho/para/AuthKey_XXXXXXXXXX.p8 | pbcopy
@@ -84,7 +91,7 @@ O workflow `.github/workflows/ios-release.yml` irá:
 5. enviar o `.ipa` ao App Store Connect/TestFlight;
 6. criar ou atualizar a versão da App Store com os metadados e screenshots versionados no repositório.
 
-Tags como `release-1.0.2` ou `v1.0` falham de propósito. Em uma reexecução, o sufixo `GITHUB_RUN_ATTEMPT` produz um novo número de build.
+Tags como `release-1.0.2` ou `v1.0` falham de propósito. Os envios do aplicativo são serializados entre branches. Uma reexecução usa o horário UTC atual; confirme que seu número de build é maior que qualquer envio anterior na mesma versão.
 
 ## 6. Completar a primeira ficha da App Store
 
@@ -96,10 +103,11 @@ Antes de enviar à análise, complete no App Store Connect:
 - questionário atualizado de classificação etária;
 - disponibilidade, preço (gratuito, se essa for a escolha) e status de comerciante para distribuição na União Europeia;
 - de 1 a 10 screenshots sem transparência. Os conjuntos versionados em `fastlane/screenshots/en-US` e `fastlane/screenshots/pt-BR` cobrem iPhone 6,9 polegadas e iPad 13 polegadas;
+- assets criativos sem transparência para as novas superfícies da App Store: `fastlane/creative_assets/header/Vibe-Habits-Header-3840x1646.png` (21:9) e `fastlane/creative_assets/search-results/Vibe-Habits-Search-3840x2560.png` (3:2). Eles não contêm texto e podem ser usados em inglês e português; o preflight valida formato e dimensões antes do release;
 - informações de revisão: o app não exige login, funciona offline, câmera/fotos são opcionais e as notificações são locais;
 - selecione o build processado pelo TestFlight e escolha liberação manual, automática ou gradual.
 
-Depois, use **Add for Review** e **Submit for Review**. A publicação automática direta pode ser habilitada no Fastlane após a primeira versão aprovada e depois que screenshots e metadados estiverem versionados no repositório.
+Depois, use a lane `app_store_review` com evidência física validada. A liberação pública continua manual mesmo depois da aprovação.
 
 ## 7. Validação local
 
@@ -122,3 +130,53 @@ Para validar localmente testes, assinatura, archive e exportação sem enviar o 
 ```sh
 RELEASE_TAG=v1.1.0 SKIP_UPLOAD=true bundle exec fastlane ios release
 ```
+
+## 8. Consulta de estado e submissão separada (outubro de 2026)
+
+A automação segue a estrutura do Civitas: envio ao TestFlight e submissão à App Store são passos separados; a liberação pública permanece manual. As chaves da conta pessoal SB6QYUH97U já configuradas neste repositório são preservadas. Nenhuma chave do time corporativo Civitas é copiada.
+
+Para consultar versões, build selecionado, processamento, screenshots por idioma/dispositivo e submissões sem alterar a Apple:
+
+```sh
+bundle exec fastlane ios publication_status
+```
+
+O resultado é salvo em `artifacts/publication/app-store-status.json` (ignorado pelo Git), sem token, chave ou dados de contato do revisor. O GitHub Actions pode executar a mesma consulta com os secrets existentes: acione **iOS release**, mantenha `audit_only=true` e baixe o artifact `app-store-status-*`.
+
+Para sincronizar somente materiais, escolha `audit_only=false` e `listing_only=true`. `store_listing` nunca submete a versão. O GitHub Actions não envia versões à análise: ele preserva o IPA assinado e o relatório de validação como artifact por 30 dias. Depois do teste em aparelho físico, baixe o IPA da mesma execução, copie `fastlane/release-evidence.example.json` para `artifacts/publication/release-evidence.json`, preencha a evidência e execute localmente:
+
+```sh
+APP_STORE_VERSION=1.2.0 \
+APP_STORE_BUILD_NUMBER=202610070130 \
+IOS_IPA_PATH=/caminho/para/VibeHabits-1.2.0-202610070130.ipa \
+RELEASE_EVIDENCE_PATH=artifacts/publication/release-evidence.json \
+bundle exec fastlane ios app_store_review
+```
+
+Essa lane usa o build já selecionado na Apple e não reenvia screenshots ou binários. Antes do envio, o preflight exige que versão, build e SHA-256 da evidência correspondam ao IPA assinado; também valida o vídeo físico, metadados, screenshots, assinatura, profiles e manifestos de privacidade. Um build solicitado por `APP_STORE_BUILD_NUMBER` deve ser igual ao selecionado. Builds sem processamento VALID ou versões rejeitadas/com pendências são bloqueados. Se a versão já está em análise ou aprovada, a ação termina informando esse estado, sem criar submissão duplicada. A verificação de compras internas fica excluída porque o app não tem IAP e esse precheck não funciona com a chave de API.
+
+Exemplo do arquivo de evidência (ignorado pelo Git):
+
+```json
+{
+  "version": "1.2.0",
+  "build": "202610070130",
+  "ipaSha256": "SHA-256 do IPA validado",
+  "physicalDevice": "iPhone 17 Pro",
+  "operatingSystem": "iOS 26.6.2",
+  "physicalVideo": "artifacts/app-review/review-1.2.0.mp4",
+  "physicalVideoSha256": "SHA-256 do vídeo",
+  "physicalDeviceValidated": true,
+  "coreFlowsValidated": true,
+  "permissionsValidated": true,
+  "privacyDeclarationsReviewed": true,
+  "storeMetadataComplete": true,
+  "reviewInformationComplete": true,
+  "regionalBehaviorConfirmed": true,
+  "contentRightsConfirmed": true
+}
+```
+
+Os seis testes de decisão de submissão devem passar antes de operar a publicação. A consulta remota não substitui a conferência das declarações App Privacy, contratos e status de comerciante na interface Apple. Rejeições exigem ler a mensagem e resolver o motivo antes de qualquer novo envio.
+
+Fontes: [Fastlane upload_to_app_store](https://docs.fastlane.tools/actions/upload_to_app_store/), [submeter um app](https://developer.apple.com/help/app-store-connect/manage-submissions-to-app-review/submit-an-app), [estado das submissões via API](https://developer.apple.com/documentation/appstoreconnectapi/get-v1-apps-_id_-reviewsubmissions).

@@ -1,3 +1,30 @@
-Vibe Habits does not require an account or sign-in. All habit names, targets, progress logs, reminder preferences, notes, and optional photos remain on the device. The app does not include advertising, analytics, tracking, subscriptions, in-app purchases, or external account services.
+REVIEW DEVICE AND BUILD
+- Physical device: iPhone 17 Pro
+- OS: iOS 26.6.2
+- App version/build: 1.1.0 (6.1)
 
-To review the main functionality, finish the three-page onboarding (optional starter habits can be selected), create a habit from the Habits tab, log progress, and open Insights. A local reminder can be added while creating a habit or enabled in Settings. JSON backup export and restore are available in Settings > Your Data. Small and medium Home Screen widgets show today's completed-habit count using the same private App Group container. Camera and photo-library permissions are requested only when the reviewer chooses to attach a photo. Notification permission is requested only when a reminder is enabled.
+APP PURPOSE, AUDIENCE, AND VALUE
+Vibe Habits is a private habit tracker for a general adult audience. It helps people create daily, weekly, or hourly routines, record progress, review streaks and insights, receive optional local reminders, and keep a JSON backup. Its value is a focused habit-building experience that works locally without requiring an account or sending personal habit data to a server.
+
+ACCESS AND REVIEW STEPS
+No account, sign-in, demo credentials, subscription, purchase, or sample file is required.
+1. Complete or skip the three-page onboarding. Optional starter habits may be selected.
+2. Open the Habits tab and tap the plus button to create a habit.
+3. Use Log Progress/Edit Progress on a habit, then open Insights.
+4. Open Feed to review recent activity.
+5. Open Settings > Your Data to access JSON backup export and restore.
+6. Small and medium Home Screen widgets show today's completed-habit count using the same private App Group container.
+
+DATA AND DEVICE PERMISSIONS
+Habit names, targets, progress logs, reminder preferences, notes, and optional photos remain on the device. Camera or photo-library access is requested only if the reviewer chooses to attach a photo. Notification permission is requested only when a reminder is enabled. The app does not request location, contacts, microphone, or App Tracking Transparency permission.
+
+EXTERNAL SERVICES AND TOOLS
+There is no external backend and no third-party service used for core functionality. The app has no advertising, analytics, tracking, external authentication, subscriptions, in-app purchases, or AI service. It uses Apple system frameworks for local storage, local notifications, photo/camera selection, widgets/App Groups, the native share sheet and Files interface for JSON backups, and the system review prompt.
+
+REGIONAL AVAILABILITY
+Functionality is consistent in every region. The only regional difference is localization: English and Brazilian Portuguese are supported.
+
+REGULATED INDUSTRIES AND THIRD-PARTY MATERIAL
+Not applicable. Vibe Habits is not intended for a regulated industry and does not provide medical, financial, legal, gambling, or other regulated services. It does not include protected third-party material requiring authorization.
+
+A screen recording from the physical device above demonstrates launch and the core user flow. No login, account deletion, paid content, user-generated-content moderation, or tracking flow appears because the app does not provide those features.

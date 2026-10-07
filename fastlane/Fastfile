@@ -1,5 +1,6 @@
 default_platform(:ios)
 
+ROOT = File.expand_path("..", __dir__)
 PROJECT_PATH = "habits tracker.xcodeproj"
 SCHEME = "habits tracker"
 APP_IDENTIFIER = ENV.fetch("APP_IDENTIFIER", "app.vibehabits.ios")
@@ -7,7 +8,7 @@ APP_EXTENSION_IDENTIFIER = ENV.fetch("APP_EXTENSION_IDENTIFIER", "app.vibehabits
 APPLE_TEAM_ID = ENV.fetch("APPLE_TEAM_ID", "SB6QYUH97U")
 
 def release_version_from_tag
-  tag = ENV["GITHUB_REF_NAME"] || ENV["RELEASE_TAG"]
+  tag = ENV["RELEASE_TAG"] || ENV["GITHUB_REF_NAME"]
   UI.user_error!("Set RELEASE_TAG (for example, v1.0.2) when running locally") if tag.to_s.empty?
 
   match = tag.match(/\Av(\d+\.\d+\.\d+)\z/)
@@ -17,11 +18,7 @@ def release_version_from_tag
 end
 
 def release_build_number
-  if ENV["GITHUB_RUN_NUMBER"]
-    "#{ENV.fetch("GITHUB_RUN_NUMBER")}.#{ENV.fetch("GITHUB_RUN_ATTEMPT", "1")}"
-  else
-    Time.now.utc.strftime("%Y%m%d%H%M")
-  end
+  Time.now.utc.strftime("%Y%m%d%H%M")
 end
 
 platform :ios do
@@ -48,14 +45,23 @@ platform :ios do
   end
 
   private_lane :app_store_connect_key do
-    ensure_env_vars(
-      env_vars: %w[
-        APP_STORE_CONNECT_KEY_ID
-        APP_STORE_CONNECT_ISSUER_ID
-        APP_STORE_CONNECT_KEY_CONTENT_BASE64
-      ]
-    )
+    ensure_env_vars(env_vars: %w[APP_STORE_CONNECT_KEY_ID APP_STORE_CONNECT_ISSUER_ID])
+    key_path = ENV["APP_STORE_CONNECT_KEY_PATH"]
+    unless key_path.to_s.empty?
+      requested = File.expand_path(key_path)
+      UI.user_error!("Apple API key is unavailable: #{requested}") unless File.file?(requested)
+      expanded = File.realpath(requested)
+      UI.user_error!("Keep the Apple API key outside the project") if expanded.start_with?(ROOT + "/")
+      UI.user_error!("Apple API key must be readable only by its owner (chmod 600)") unless (File.stat(expanded).mode & 0077).zero?
+      next app_store_connect_api_key(
+        key_id: ENV.fetch("APP_STORE_CONNECT_KEY_ID"),
+        issuer_id: ENV.fetch("APP_STORE_CONNECT_ISSUER_ID"),
+        key_filepath: expanded,
+        in_house: false
+      )
+    end
 
+    ensure_env_vars(env_vars: %w[APP_STORE_CONNECT_KEY_CONTENT_BASE64])
     app_store_connect_api_key(
       key_id: ENV.fetch("APP_STORE_CONNECT_KEY_ID"),
       issuer_id: ENV.fetch("APP_STORE_CONNECT_ISSUER_ID"),
@@ -88,23 +94,28 @@ platform :ios do
     sync_app_store_signing(api_key: app_store_connect_key)
   end
 
+  desc "Read the real App Store version, build, screenshots, and review status"
+  lane :publication_status do
+    sh("bundle", "exec", "ruby", "scripts/publication_status.rb")
+  end
+
   desc "Upload the reviewed App Store listing and screenshots without a binary"
   lane :store_listing do
-    submit_for_review = ENV["SUBMIT_FOR_REVIEW"] == "true"
-
+    version_string = ENV.fetch("APP_STORE_VERSION", "1.1.0")
+    sh("python3", "fastlane/scripts/release_preflight.py", "--listing", "--version", version_string)
     upload_to_app_store(
       api_key: app_store_connect_key,
-      app_version: ENV.fetch("APP_STORE_VERSION", "1.1.0"),
+      app_version: version_string,
       metadata_path: "fastlane/metadata",
       screenshots_path: "fastlane/screenshots",
       skip_binary_upload: true,
       skip_metadata: ENV["SKIP_STORE_METADATA"] == "true",
       skip_app_version_update: false,
       overwrite_screenshots: true,
-      submit_for_review: submit_for_review,
+      submit_for_review: false,
       automatic_release: false,
       force: true,
-      run_precheck_before_submit: submit_for_review,
+      run_precheck_before_submit: false,
       precheck_include_in_app_purchases: false,
       submission_information: {
         export_compliance_uses_encryption: false,
@@ -113,12 +124,62 @@ platform :ios do
     )
   end
 
+  desc "Submit a validated build only after matching physical-device evidence"
+  lane :app_store_review do
+    require_relative "scripts/publication_status"
+    require_relative "scripts/review_policy"
+    api_key = app_store_connect_key
+    version_string = ENV.fetch("APP_STORE_VERSION", "1.1.0")
+    report = PublicationStatus.inventory
+    version = report[:versions].find { |item| item[:version] == version_string }
+    UI.user_error!("App Store version #{version_string} was not found") unless version
+    action = ReviewPolicy.decision(version, report[:review_submissions])
+    if action == :already_submitted
+      UI.success("#{version_string} is already submitted or approved; no duplicate submission was created")
+    elsif action == :blocked
+      UI.user_error!("Resolve App Review issues and select a VALID build in a prepared version before submission")
+    else
+      requested_build = ENV["APP_STORE_BUILD_NUMBER"]
+      if !requested_build.to_s.empty? && requested_build != version[:build_number]
+        UI.user_error!("Selected build #{version[:build_number]} does not match requested build #{requested_build}")
+      end
+      ensure_env_vars(env_vars: %w[IOS_IPA_PATH])
+      sh(
+        "python3", "fastlane/scripts/release_preflight.py",
+        "--submission",
+        "--version", version_string,
+        "--build", version[:build_number],
+        "--ipa", ENV.fetch("IOS_IPA_PATH"),
+        "--evidence", ENV.fetch("RELEASE_EVIDENCE_PATH", "artifacts/publication/release-evidence.json")
+      )
+      upload_to_app_store(
+        api_key: api_key,
+        app_identifier: APP_IDENTIFIER,
+        app_version: version_string,
+        build_number: version[:build_number],
+        skip_binary_upload: true,
+        skip_metadata: true,
+        skip_screenshots: true,
+        submit_for_review: true,
+        automatic_release: false,
+        force: true,
+        run_precheck_before_submit: true,
+        precheck_include_in_app_purchases: false,
+        submission_information: {
+          export_compliance_uses_encryption: false,
+          content_rights_contains_third_party_content: false
+        }
+      )
+    end
+  end
+
   desc "Test, archive, sign, and upload a tagged build to App Store Connect/TestFlight"
   lane :release do
     version = release_version_from_tag
     build_number = release_build_number
     api_key = app_store_connect_key
 
+    sh("python3", "fastlane/scripts/release_preflight.py", "--source", "--version", version)
     test
     sync_app_store_signing(api_key: api_key)
 
@@ -144,11 +205,20 @@ platform :ios do
       }
     )
 
+    sh(
+      "python3", "fastlane/scripts/release_preflight.py",
+      "--version", version,
+      "--build", build_number,
+      "--ipa", lane_context[SharedValues::IPA_OUTPUT_PATH]
+    )
+
     if ENV["SKIP_UPLOAD"] == "true"
       UI.success("Vibe Habits #{version} (#{build_number}) passed local release validation; upload was skipped")
     else
       upload_to_testflight(
         api_key: api_key,
+        distribute_external: false,
+        notify_external_testers: false,
         skip_waiting_for_build_processing: true
       )
 

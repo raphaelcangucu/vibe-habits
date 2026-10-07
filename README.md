@@ -43,6 +43,8 @@ A lightweight iOS habit tracker built with SwiftUI and SwiftData, designed with 
 
 ## 🚢 App Store releases
 
+A preparação atual e o bloqueio de contrato Apple estão em [docs/PUBLICATION-READINESS.md](docs/PUBLICATION-READINESS.md). O fluxo Fastlane mantém TestFlight, ficha e revisão separados, com lançamento manual.
+
 Fastlane and GitHub Actions upload every new semantic version tag (`vMAJOR.MINOR.PATCH`) to App Store Connect/TestFlight and synchronize the version's metadata and screenshots. See [docs/APP_STORE_RELEASE.md](docs/APP_STORE_RELEASE.md) for the one-time signing setup, required GitHub secrets, and the App Store submission checklist.
 
 ## 📊 Key Statistics Tracked

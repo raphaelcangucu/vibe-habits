@@ -1,10 +1,7 @@
 require "spaceship"
+require_relative "connect_api_token"
 
-token = Spaceship::ConnectAPI::Token.create(
-  key_id: ENV.fetch("APP_STORE_CONNECT_KEY_ID"),
-  issuer_id: ENV.fetch("APP_STORE_CONNECT_ISSUER_ID"),
-  filepath: ENV.fetch("APP_STORE_CONNECT_KEY_PATH")
-)
+token = ConnectApiToken.create
 Spaceship::ConnectAPI.token = token
 
 bundle_id = ENV.fetch("APP_IDENTIFIER", "app.vibehabits.ios")

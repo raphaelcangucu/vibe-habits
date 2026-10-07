@@ -107,6 +107,18 @@ def listing() -> None:
             require((width, height) in valid_sizes,
                     f"Unsupported screenshot dimensions {width}x{height}: {path}")
 
+    creative_assets = {
+        ROOT / "fastlane" / "creative_assets" / "header" /
+        "Vibe-Habits-Header-3840x1646.png": (3840, 1646),
+        ROOT / "fastlane" / "creative_assets" / "search-results" /
+        "Vibe-Habits-Search-3840x2560.png": (3840, 2560),
+    }
+    for path, expected_size in creative_assets.items():
+        require(path.is_file(), f"Missing App Store creative asset: {path}")
+        width, height, _ = png_dimensions_and_color(path)
+        require((width, height) == expected_size,
+                f"Unsupported creative asset dimensions {width}x{height}: {path}")
+
     notes = (ROOT / "fastlane" / "metadata" / "review_information" / "notes.txt").read_text()
     for section in (
         "APP PURPOSE, AUDIENCE, AND VALUE",

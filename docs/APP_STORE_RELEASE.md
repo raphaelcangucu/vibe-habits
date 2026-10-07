@@ -103,6 +103,7 @@ Antes de enviar à análise, complete no App Store Connect:
 - questionário atualizado de classificação etária;
 - disponibilidade, preço (gratuito, se essa for a escolha) e status de comerciante para distribuição na União Europeia;
 - de 1 a 10 screenshots sem transparência. Os conjuntos versionados em `fastlane/screenshots/en-US` e `fastlane/screenshots/pt-BR` cobrem iPhone 6,9 polegadas e iPad 13 polegadas;
+- assets criativos sem transparência para as novas superfícies da App Store: `fastlane/creative_assets/header/Vibe-Habits-Header-3840x1646.png` (21:9) e `fastlane/creative_assets/search-results/Vibe-Habits-Search-3840x2560.png` (3:2). Eles não contêm texto e podem ser usados em inglês e português; o preflight valida formato e dimensões antes do release;
 - informações de revisão: o app não exige login, funciona offline, câmera/fotos são opcionais e as notificações são locais;
 - selecione o build processado pelo TestFlight e escolha liberação manual, automática ou gradual.
 

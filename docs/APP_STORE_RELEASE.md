@@ -37,7 +37,14 @@ bundle install
 cp .env.example .env
 ```
 
-Preencha `.env` sem commitá-lo. Para converter a chave `.p8` em Base64 no macOS:
+Preencha `.env` sem commitá-lo. Em execução local, prefira apontar diretamente para a chave fora do repositório:
+
+```sh
+chmod 600 /caminho/para/AuthKey_XXXXXXXXXX.p8
+APP_STORE_CONNECT_KEY_PATH=/caminho/para/AuthKey_XXXXXXXXXX.p8
+```
+
+Defina esse caminho em `.env` como `APP_STORE_CONNECT_KEY_PATH`. O Fastlane recusa uma chave dentro do projeto ou com permissões mais abertas. O Base64 permanece disponível somente como alternativa para o GitHub Actions:
 
 ```sh
 base64 -i /caminho/para/AuthKey_XXXXXXXXXX.p8 | pbcopy
@@ -99,7 +106,7 @@ Antes de enviar à análise, complete no App Store Connect:
 - informações de revisão: o app não exige login, funciona offline, câmera/fotos são opcionais e as notificações são locais;
 - selecione o build processado pelo TestFlight e escolha liberação manual, automática ou gradual.
 
-Depois, use **Add for Review** e **Submit for Review**. A publicação automática direta pode ser habilitada no Fastlane após a primeira versão aprovada e depois que screenshots e metadados estiverem versionados no repositório.
+Depois, use a lane `app_store_review` com evidência física validada. A liberação pública continua manual mesmo depois da aprovação.
 
 ## 7. Validação local
 
@@ -135,13 +142,39 @@ bundle exec fastlane ios publication_status
 
 O resultado é salvo em `artifacts/publication/app-store-status.json` (ignorado pelo Git), sem token, chave ou dados de contato do revisor. O GitHub Actions pode executar a mesma consulta com os secrets existentes: acione **iOS release**, mantenha `audit_only=true` e baixe o artifact `app-store-status-*`.
 
-Para sincronizar somente materiais, escolha `audit_only=false`, `listing_only=true` e `submit_for_review=false`. `store_listing` nunca submete a versão. Para enviar uma versão já preparada à análise, escolha `audit_only=false`, `listing_only=true` e `submit_for_review=true`, ou execute:
+Para sincronizar somente materiais, escolha `audit_only=false` e `listing_only=true`. `store_listing` nunca submete a versão. O GitHub Actions não envia versões à análise: ele preserva o IPA assinado e o relatório de validação como artifact por 30 dias. Depois do teste em aparelho físico, baixe o IPA da mesma execução, copie `fastlane/release-evidence.example.json` para `artifacts/publication/release-evidence.json`, preencha a evidência e execute localmente:
 
 ```sh
-APP_STORE_VERSION=1.1.0 bundle exec fastlane ios app_store_review
+APP_STORE_VERSION=1.2.0 \
+APP_STORE_BUILD_NUMBER=202610070130 \
+IOS_IPA_PATH=/caminho/para/VibeHabits-1.2.0-202610070130.ipa \
+RELEASE_EVIDENCE_PATH=artifacts/publication/release-evidence.json \
+bundle exec fastlane ios app_store_review
 ```
 
-Essa lane usa o build já selecionado na Apple e não reenvia screenshots ou binários. Um build solicitado por `APP_STORE_BUILD_NUMBER` deve ser igual ao selecionado. Builds sem processamento VALID ou versões rejeitadas/com pendências são bloqueados. Se a versão já está em análise ou aprovada, a ação termina informando esse estado, sem criar submissão duplicada. A verificação de compras internas fica excluída porque o app não tem IAP e esse precheck não funciona com a chave de API.
+Essa lane usa o build já selecionado na Apple e não reenvia screenshots ou binários. Antes do envio, o preflight exige que versão, build e SHA-256 da evidência correspondam ao IPA assinado; também valida o vídeo físico, metadados, screenshots, assinatura, profiles e manifestos de privacidade. Um build solicitado por `APP_STORE_BUILD_NUMBER` deve ser igual ao selecionado. Builds sem processamento VALID ou versões rejeitadas/com pendências são bloqueados. Se a versão já está em análise ou aprovada, a ação termina informando esse estado, sem criar submissão duplicada. A verificação de compras internas fica excluída porque o app não tem IAP e esse precheck não funciona com a chave de API.
+
+Exemplo do arquivo de evidência (ignorado pelo Git):
+
+```json
+{
+  "version": "1.2.0",
+  "build": "202610070130",
+  "ipaSha256": "SHA-256 do IPA validado",
+  "physicalDevice": "iPhone 17 Pro",
+  "operatingSystem": "iOS 26.6.2",
+  "physicalVideo": "artifacts/app-review/review-1.2.0.mp4",
+  "physicalVideoSha256": "SHA-256 do vídeo",
+  "physicalDeviceValidated": true,
+  "coreFlowsValidated": true,
+  "permissionsValidated": true,
+  "privacyDeclarationsReviewed": true,
+  "storeMetadataComplete": true,
+  "reviewInformationComplete": true,
+  "regionalBehaviorConfirmed": true,
+  "contentRightsConfirmed": true
+}
+```
 
 Os seis testes de decisão de submissão devem passar antes de operar a publicação. A consulta remota não substitui a conferência das declarações App Privacy, contratos e status de comerciante na interface Apple. Rejeições exigem ler a mensagem e resolver o motivo antes de qualquer novo envio.
 

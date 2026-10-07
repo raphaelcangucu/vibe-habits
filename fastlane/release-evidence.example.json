@@ -1,0 +1,17 @@
+{
+  "version": "0.0.0",
+  "build": "0",
+  "ipaSha256": "replace-with-validated-ipa-sha256",
+  "physicalDevice": "iPhone model",
+  "operatingSystem": "iOS version",
+  "physicalVideo": "artifacts/app-review/review-video.mp4",
+  "physicalVideoSha256": "replace-with-video-sha256",
+  "physicalDeviceValidated": false,
+  "coreFlowsValidated": false,
+  "permissionsValidated": false,
+  "privacyDeclarationsReviewed": false,
+  "storeMetadataComplete": false,
+  "reviewInformationComplete": false,
+  "regionalBehaviorConfirmed": false,
+  "contentRightsConfirmed": false
+}

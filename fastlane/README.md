@@ -39,6 +39,14 @@ Run the UI test suite separately
 
 Create the initial App Store certificate and provisioning profile
 
+### ios publication_status
+
+```sh
+[bundle exec] fastlane ios publication_status
+```
+
+Read the real App Store version, build, screenshots, and review status
+
 ### ios store_listing
 
 ```sh
@@ -46,6 +54,14 @@ Create the initial App Store certificate and provisioning profile
 ```
 
 Upload the reviewed App Store listing and screenshots without a binary
+
+### ios app_store_review
+
+```sh
+[bundle exec] fastlane ios app_store_review
+```
+
+Submit a validated build only after matching physical-device evidence
 
 ### ios release
 

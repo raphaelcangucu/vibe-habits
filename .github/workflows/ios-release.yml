@@ -21,11 +21,6 @@ on:
         required: true
         default: true
         type: boolean
-      submit_for_review:
-        description: Submit the editable App Store version for review after validation
-        required: true
-        default: false
-        type: boolean
 
 permissions:
   contents: read
@@ -66,10 +61,19 @@ jobs:
           bundler-cache: true
 
       - name: Validate publication policy
+        env:
+          REQUESTED_APP_STORE_VERSION: ${{ inputs.app_store_version }}
         run: |
           ruby -c fastlane/Fastfile
+          ruby -c fastlane/scripts/connect_api_token.rb
           ruby -c fastlane/scripts/publication_status.rb
           ruby fastlane/scripts/review_policy_test.rb
+          if [[ "$GITHUB_EVENT_NAME" == "push" ]]; then
+            release_version="${GITHUB_REF_NAME#v}"
+          else
+            release_version="$REQUESTED_APP_STORE_VERSION"
+          fi
+          python3 fastlane/scripts/release_preflight.py --listing --version "$release_version"
 
       - name: Configure read-only Match access
         if: github.event_name == 'push' || (inputs.audit_only == false && inputs.listing_only == false)
@@ -113,10 +117,9 @@ jobs:
           retention-days: 14
 
       - name: Upload App Store metadata and screenshots
-        if: github.event_name == 'push' || (inputs.audit_only == false && inputs.submit_for_review == false)
+        if: github.event_name == 'push' || inputs.audit_only == false
         env:
           REQUESTED_APP_STORE_VERSION: ${{ inputs.app_store_version }}
-          SUBMIT_FOR_REVIEW: ${{ inputs.submit_for_review }}
         run: |
           if [[ "$GITHUB_EVENT_NAME" == "workflow_dispatch" ]]; then
             app_store_version="$REQUESTED_APP_STORE_VERSION"
@@ -125,11 +128,16 @@ jobs:
           fi
           APP_STORE_VERSION="$app_store_version" bundle exec fastlane ios store_listing
 
-      - name: Submit the existing selected build for manual App Store release
-        if: github.event_name == 'workflow_dispatch' && inputs.audit_only == false && inputs.submit_for_review == true
-        env:
-          APP_STORE_VERSION: ${{ inputs.app_store_version }}
-        run: bundle exec fastlane ios app_store_review
+      - name: Preserve the signed IPA and validation report
+        if: github.event_name == 'push' || (inputs.audit_only == false && inputs.listing_only == false)
+        uses: actions/upload-artifact@v4
+        with:
+          name: vibe-habits-ios-${{ github.run_number }}
+          path: |
+            build/*.ipa
+            artifacts/publication/ipa-validation.json
+          if-no-files-found: error
+          retention-days: 30
 
       - name: Upload build logs when the release fails
         if: failure()

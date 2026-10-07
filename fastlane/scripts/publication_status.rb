@@ -5,6 +5,7 @@ require "net/http"
 require "uri"
 require "fileutils"
 require "time"
+require_relative "connect_api_token"
 
 module PublicationStatus
   module_function
@@ -22,12 +23,7 @@ module PublicationStatus
   end
 
   def inventory
-    @token = Spaceship::ConnectAPI::Token.create(
-      key_id: ENV.fetch("APP_STORE_CONNECT_KEY_ID"),
-      issuer_id: ENV.fetch("APP_STORE_CONNECT_ISSUER_ID"),
-      key: ENV.fetch("APP_STORE_CONNECT_KEY_CONTENT_BASE64"),
-      is_key_content_base64: true
-    )
+    @token = ConnectApiToken.create
     app_id = ENV.fetch("APP_STORE_CONNECT_APP_ID", "6800547603")
     expected_bundle = ENV.fetch("APP_IDENTIFIER", "app.vibehabits.ios")
     app = get("/v1/apps/#{app_id}").fetch("data")
